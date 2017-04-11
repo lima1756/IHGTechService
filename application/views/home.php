@@ -22,7 +22,7 @@ header('Access-Control-Allow-Origin: *');
         <?php if(isset($goTo)): ?>
           <script>
             window.onload = function() {
-                window.location = "#{{$goTo}}"
+                window.location = "#<?php echo $goTo ?>"
             }
           </script>
         <?php endif; ?>
@@ -197,29 +197,24 @@ header('Access-Control-Allow-Origin: *');
             <p>Esta herramienta tiene la intención de disminuir costos, simplificar tareas y permitir una mayor eficiencia de trabajo para todos. <br>¿Que esperas para registrarte?</p>
             <hr class="bottom-line">
           </div>
-          <div id="error" class="alert alert-danger" style="visibility:hidden;display: none;"></div>
+          <div id="error" class="alert alert-danger" style="visibility:hidden;display: none;"><?php echo validation_errors(); ?></div>
           <div id="registered" class="alert alert-success" style="visibility:hidden; display: none;"></div>
           <?php if(isset($error)){
-            if(count($error)>0){
+            if(count($error)>0 || validation_errors()){
               echo '<script type="text/javascript">
                           var errorDiv = document.getElementById(\'error\');
                           document.getElementById(\'error\').style.visibility = "visible";
                           document.getElementById(\'error\').style.display = "block";
-                        </script>';        
+                        </script>';     
               foreach($error as $e)
-                if($e=="NULLS"){
-                  echo '<script type="text/javascript">
-                        errorDiv.innerHTML=errorDiv.innerHTML+"Porfavor llene todos los formularios<br>";
-                        </script>';
-                }
-                elseif($e=="denied"){
+                if($e=="denied"){
                   echo '<script type="text/javascript">
                           errorDiv.innerHTML=errorDiv.innerHTML+"Su solicitud ya fue previamente denegada<br>";
                         </script>';
                 }
                 elseif($e=="registered"){
                   echo '<script type="text/javascript">
-                          errorDiv.innerHTML=errorDiv.innerHTML+"Su usuario esta en proceso de aceptación<br>";
+                          errorDiv.innerHTML=errorDiv.innerHTML+"Su usuario ya fue registrado, espere su confirmación, si ya la recibio intente iniciar sesion<br>";
                         </script>';
                 }
                 elseif($e=="passwords"){
@@ -242,7 +237,7 @@ header('Access-Control-Allow-Origin: *');
           <form action="/signUp" method="post" role="form" class="contactForm">
               <div class="col-md-6 col-sm-6 col-xs-12 left">
                 <div class="form-group">
-                    <input type="email" class="form-control" name="email" id="email" placeholder="Tu Email" minlength=5/>
+                    <input type="email" class="form-control" name="email" id="email" value="<?php echo set_value('email'); ?>" placeholder="Tu Email" minlength=5/>
                     <div class="validation"></div>
                 </div>
                 <div class="form-group">
@@ -254,15 +249,15 @@ header('Access-Control-Allow-Origin: *');
                     <div class="validation"></div>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="name" class="form-control form" id="name" placeholder="Tu nombre" minlength=2  />
+                    <input type="text" name="name" class="form-control form" id="name"  value="<?php echo set_value('name'); ?>" placeholder="Tu nombre" minlength=2  />
                     <div class="validation"></div>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="last" class="form-control form" id="last" placeholder="Tu apellido" minlength=2 />
+                    <input type="text" name="last" class="form-control form" id="last" value="<?php echo set_value('last'); ?>" placeholder="Tu apellido" minlength=2 />
                     <div class="validation"></div>
                 </div>
                 <div class="form-group">
-                    <input type="number" name="cell" class="form-control form" id="last" placeholder="Tu celular" min=10000  />
+                    <input type="number" name="cell" class="form-control form" id="cell" value="<?php echo set_value('cell'); ?>" placeholder="Tu celular" min=10000  />
                     <div class="validation"></div>
                 </div>
                 
@@ -270,24 +265,24 @@ header('Access-Control-Allow-Origin: *');
               
               <div class="col-md-6 col-sm-6 col-xs-12 right">
                 <div class="form-group">
-                    <input type="number" name="tel" class="form-control form" id="last" placeholder="Tu telefono" minlength=10000  />
+                    <input type="number" name="tel" class="form-control form" id="tel" value="<?php echo set_value('tel'); ?>" placeholder="Tu telefono" minlength=10000  />
                     <div class="validation"></div>
                 </div>
                 <div class="form-group">
-                    <input type="number" name="ext" class="form-control form" id="last" placeholder="Tu extensión" minlength=1 />
+                    <input type="number" name="ext" class="form-control form" id="ext" value="<?php echo set_value('ext'); ?>" placeholder="Tu extensión" minlength=1 />
                     <div class="validation"></div>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="area" class="form-control form" id="last" placeholder="Tu area de trabajo" minlength=2 />
+                    <input type="text" name="area" class="form-control form" id="area" value="<?php echo set_value('area'); ?>" placeholder="Tu area de trabajo" minlength=2 />
                     <div class="validation"></div>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="work" class="form-control form" id="last" placeholder="Tu trabajo" minlength=2 />
+                    <input type="text" name="work" class="form-control form" id="work" value="<?php echo set_value('work'); ?>" placeholder="Tu trabajo" minlength=2 />
                     <div class="validation"></div>
                 </div>
                 
                 <div class="form-group">
-                    <select class="form-control" name="country" id="country">
+                    <select class="form-control" name="country" id="country" value="<?php echo set_value('country'); ?>">
                             <option value="null">Seleccione su país</option>
                         <?php foreach ($items->result() as $item): ?>
                             <option value='<?php echo $item->id ?>'><?php echo $item->name ?></option>
