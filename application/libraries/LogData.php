@@ -145,9 +145,8 @@
         public function getData($columna)
         {
             $this->CI =& get_instance();
-            if(isset($this->data))
-            {
-                if(sizeof($this->data[0])!=0 || $this->retrieveSession())
+
+                if( $this->retrieveSession() || sizeof($this->data[0])!=0)
                 {
                     if(isset($this->data[0][$columna]))
                     {
@@ -155,7 +154,6 @@
                     }
                 }
                     
-            }
             return null;
         }
         
