@@ -149,7 +149,6 @@ class Foro extends CI_Controller
         );
         $this->db->insert('foro', $insert);
         $foroID = $this->db->insert_id();
-        var_dump($foroID);
         $originalNames=$_FILES['files']['name'];
         $files = $_FILES;
         $count = count($_FILES['files']['name']);
