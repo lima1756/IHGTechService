@@ -18,8 +18,10 @@
                                 FROM tickets INNER JOIN users ON users.id = tickets.id_mortal INNER JOIN countries ON users.id_region = countries.id
                                 GROUP BY id_mortal");
     $paises = $paises->result();
-    $estados = $this->db->query("SELECT count(estados.estado) AS conteo, estados.estado FROM estados INNER JOIN ticket_sus ON estados.id_estado = ticket_sus.id_estado   
-                                WHERE id_SU = " . $this->logdata->getData("id") . " GROUP BY estados.estado");
+    $estados = $this->db->query("SELECT count(estados.estado) AS conteo, estados.estado FROM estados INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_estado = estados.id_estado   
+                                INNER JOIN ticket_sus ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
+                                WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
+                                AND id_SU = " . $this->logdata->getData("id") . " GROUP BY estados.estado");
     $estados = $estados->result();                            
     $total = 0;
     foreach($estados as $p):
@@ -142,7 +144,7 @@
                         </li>
                         <li>
                             <?php if($countP>0): ?>
-                            <a href="/dashboard/newUsers" class="alert alert-danger"><i class="fa fa-user fa-fw"></i> Peticiones
+                            <a href="/dashboard/peticiones" class="alert alert-danger"><i class="fa fa-user fa-fw"></i> Peticiones
                             <span class="pull-right ">
                             <?php echo $countP; ?>
                             </span>
@@ -228,7 +230,10 @@
                     <i class="fa fa-file-text-o fa-fw"></i> Atrasados
                 </div>
                 <?php 
-                    $pendientes = $this->db->query("SELECT TIME_TO_SEC(TIMEDIFF(NOW(), ticket_sus.fecha_hora)) as secs , prioridad, estado FROM ticket_sus INNER JOIN estados ON estados.id_estado = ticket_sus.id_estado WHERE id_SU = ". $this->logdata->getData("id"));
+                    $pendientes = $this->db->query("SELECT TIME_TO_SEC(TIMEDIFF(NOW(), ticket_sus.fecha_hora)) as secs , prioridad, estado FROM ticket_sus INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU   
+                                INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
+                                WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
+                                AND id_SU = ". $this->logdata->getData("id"));
                     $pendientes = $pendientes->result();
                     $atrasados = array();
                     $atrasados[0]=0;

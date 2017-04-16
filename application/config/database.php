@@ -80,7 +80,7 @@ $db['default'] = array(
 	'password' => '',
 	'database' => 'tech_service',
 	'dbdriver' => 'pdo',
-	'dbprefix' => 'mysql',
+	'dbprefix' => '',
 	'pconnect' => FALSE,
 	'db_debug' => (ENVIRONMENT !== 'production'),
 	'cache_on' => FALSE,
