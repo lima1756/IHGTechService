@@ -11,45 +11,32 @@
                                 ) AS usuarioComun LEFT JOIN informes ON usuarioComun.id = informes.id_usuario
                                 WHERE informes.id_usuario IS NULL");
     $countP = 0;
+    $foro = array();
+    $new = false;
     foreach($usuarios->result() as $u){
         $countP++;
     }
-    $foro = $this->db->query('SELECT * FROM foro WHERE id_nota IS NULL');
+    $llamadas = $this->db->query("SELECT * FROM llamadas WHERE id_ticket_su = ". $id . " ORDER BY fecha_hora DESC");
+    $llamadas = $llamadas->result();
 ?>
 <!DOCTYPE html>
 <html lang="es">
     <head>
+        <meta charset="UTF-8">
         <title>Dashboard</title>
         
         <link rel="stylesheet" type="text/css" href="/css/dashboard/bootstrap.css")/>
         <link rel="stylesheet" type="text/css" href="/css/dashboard/font-awesome.min.css")/>
         <link rel="stylesheet" type="text/css" href="/css/dashboard/metisMenu.min.css")/>
         <link rel="stylesheet" type="text/css" href="/css/dashboard/sb-admin-2.css")/>
-        <style>
-            label input[type="radio"] ~ i.fa.fa-circle-o{
-                color: #c8c8c8;    display: inline;
-            }
-            label input[type="radio"] ~ i.fa.fa-dot-circle-o{
-                display: none;
-            }
-            label input[type="radio"]:checked ~ i.fa.fa-circle-o{
-                display: none;
-            }
-            label input[type="radio"]:checked ~ i.fa.fa-dot-circle-o{
-                color: #7AA3CC;    display: inline;
-            }
-            label:hover input[type="radio"] ~ i.fa {
-            color: #7AA3CC;
-            }
-        </style>
+        
         <script src="/js/dashboard/jquery.min.js"></script>
         <script src="/js/dashboard/bootstrap.min.js"></script>
         <script src="/js/dashboard/metisMenu.min.js"></script>
         <script src="/js/dashboard/raphael.min.js"></script>
-        <script src="/js/dashboard/morris.min.js"></script>
+        
         <script src="/js/dashboard/sb-admin-2.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+        
     </head>
     <body style="">
         <div id="wrapper">
@@ -122,32 +109,45 @@
         </div>
     
 <!--TODO-->
-    <div id="page-wrapper">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">Foro</h1>
-            </div>
-            <!-- /.col-lg-12 -->
+<div id="page-wrapper">
+    <div class="chat-panel panel panel-default">
+        <div class="panel-heading">
+            <i class="fa fa-comments fa-fw"></i> Llamadas
         </div>
-        <section id="pregunta-container" class="section-padding">
-            <div class="panel panel-default">
-                <?php foreach($foro->result() as $f): ?>
-                    <?php
-                        $name = $this->db->query("SELECT nombre FROM users WHERE id=".$f->id_SU);
-                        $name = $name->result();
-                    ?>
-                    <div class="panel-heading">
-                        <a href="/dashboard/foro/tema/<?php echo $f->id_ticket_su; ?>"><span><h3 id="user">Tema: <?php echo $f->Titulo; ?></h3><span></a>
-                    </div>
-                    <div class="panel-body">
-                        <p><b>Escrito por:</b> <?php echo $name[0]->nombre; ?></p>
-                    </div>
+        <!-- /.panel-heading -->
+        <div class="panel-body">
+            <ul class="chat">
+                <?php foreach($llamadas as $l): ?>
+                    <li>
+                        <div class="chat-body clearfix">
+                            <div class="header">
+                                <strong class="primary-font"><i class="fa fa-clock-o fa-fw"></i><?php echo date("d/m/y H:i:s",time($l->fecha_hora));?></strong>
+                            </div>
+                            <p>
+                                <?php echo(nl2br($l->detalles)); ?>
+                            </p>
+                        </div>
+                    </li>
                 <?php endforeach; ?>
-            </div>
-        </section>
+            </ul>
+        </div>
+        <!-- /.panel-body -->
+        <div class="panel-footer">
+            <form action="/dashboard/llamadas/submit/<?php echo $id; ?>" method="post">
+                <div class="form-group">
+                    <textarea id="detalles" name="detalles" type="text" class="form-control" placeholder="Escribe aqui lo que desees guardar de la llamada"></textarea>
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-warning btn-sm" id="btn-chat"/>
+                </div>
+            </form>
+        </div>
+        <!-- /.panel-footer -->
     </div>
+</div>
 <!--FIN TODO -->
-
+<script>
+   </script>
     
    
     </body>
