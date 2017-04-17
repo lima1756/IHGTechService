@@ -230,7 +230,7 @@
                     <i class="fa fa-file-text-o fa-fw"></i> Atrasados
                 </div>
                 <?php 
-                    $pendientes = $this->db->query("SELECT TIME_TO_SEC(TIMEDIFF(NOW(), ticket_sus.fecha_hora)) as secs , prioridad, estado FROM ticket_sus INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU   
+                    $pendientes = $this->db->query("SELECT TIME_TO_SEC(TIMEDIFF(NOW(), ticketsu_tiene_estado.fecha_hora)) as secs , prioridad, estado FROM ticket_sus INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU   
                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
                                 AND id_SU = ". $this->logdata->getData("id"));
