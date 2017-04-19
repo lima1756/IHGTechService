@@ -17,7 +17,8 @@
         return $string; 
     } 
 
-
+    $temas= $this->db->query("SELECT tema FROM knowledge GROUP BY tema");
+    $temas = $temas->result();
 
 ?>
 <!DOCTYPE html>
@@ -100,10 +101,22 @@
                         <!--TODO -->
                     </div>
                     <div class="col-sm-3" id="lateral">
-                        <form method="POST" action="/knowledge/search">
+                        <h4>Buscar por palabra:</h4>
+                        <form method="POST" action="/knowledge/search" id="formPalabra">
                             <div class="btn-group" role="group">
-                                <input type="text" name="search" class="btn" placeholder="Buscar" style="width:75%; border-color:orange;"/>
-                                <a class="btn btn-default" href="#" style="border-color:orange;"><i class="fa fa-search" aria-hidden="true"></i></a>
+                                <input type="text" name="search" id="search" class="btn" placeholder="Buscar" style="width:75%; border-color:orange;"/>
+                                <a class="btn btn-default" href="#" style="border-color:orange;" id="searchWord"><i class="fa fa-search" aria-hidden="true"></i></a>
+                            </div>
+                        </form>
+                        <h4>Buscar por tema:</h4>
+                        <form method="POST" action="/knowledge/tema" id="formTema">
+                            <div class="btn-group" role="group">
+                                <select name="tema" class="btn" id="tema" style="border-color:orange;">
+                                    <?php foreach($temas as $t): ?>
+                                        <option value="<?php echo $t->tema; ?>"><?php echo $t->tema; ?></option>
+                                    <?php endforeach;?>
+                                </select>
+                                <a class="btn btn-default" href="#" style="border-color:orange;" id="searchTheme"><i class="fa fa-search" aria-hidden="true"></i></a>
                             </div>
                         </form>
                         <div id="masVisitadas">
@@ -116,7 +129,7 @@
                         </div>
                     </div>
                     
-                </div>
+                </div>  
             </div>
         </section>
    
@@ -136,7 +149,17 @@
       </div>
     </footer>
     <script type="text/javascript">
-           
+           document.getElementById("searchWord").addEventListener("click", function () {
+                var form = document.getElementById("formPalabra");
+                form.action = "/knowledge/search/" + $('#search').val();
+                form.submit();
+            });
+
+            document.getElementById("searchTheme").addEventListener("click", function () {
+                var form = document.getElementById("formTema");
+                form.action = "/knowledge/tema/" + $('#tema').val();
+                form.submit();
+            });
         </script>
     </body>
 </html>

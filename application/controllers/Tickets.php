@@ -18,7 +18,7 @@ class Tickets extends CI_Controller
         }
         else
         {
-            headr("Location: /");
+            header("Location: /");
         }
     }
 

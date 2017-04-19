@@ -171,6 +171,9 @@
                                 var json = JSON.parse(data);
                                 var message = json.descripcion.replace(/\\n/g, \"<br />\");
                                 $('#pregunta-container').show();
+                                $('html, body').animate({
+                                    scrollTop: $(\"#pregunta-container\").offset().top
+                                }, 1000);
                                 $('#pregunta').html(json.pregunta);
                                 $('#descripcion').html(message);
                                 $('#estado_actual').val(json.estado);
@@ -581,6 +584,9 @@ var json = JSON;
                     json = JSON.parse(data);
                     var message = json.descripcion.replace(/\n/g, "<br />");
                     $('#pregunta-container').show();
+                    $('html, body').animate({
+                        scrollTop: $("#pregunta-container").offset().top
+                    }, 1000);
                     $('#pregunta').html(json.pregunta);
                     $('#descripcion').html(message);
                     $('#estado_actual').val(json.estado);

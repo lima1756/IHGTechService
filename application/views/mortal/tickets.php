@@ -335,6 +335,9 @@ if(is_numeric($state))
                     $('#detalles').val(json.detalles);
                     $('#progressbar').attr("style", "width:"+json.porcentaje+"%");
                     $('#barValue').html(json.porcentaje+"% Resuelto");
+                    $('html, body').animate({
+                        scrollTop: $("#pregunta-container").offset().top
+                    }, 1000);
                     if(json.porcentaje<60){
                         $('#progressbar').attr("class", "progress-bar progress-bar-danger");
                     }
