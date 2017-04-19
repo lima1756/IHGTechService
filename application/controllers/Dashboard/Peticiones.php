@@ -5,7 +5,14 @@ class Peticiones extends CI_Controller
 {
     public function index()
     {    
-        $this->load->view('SU/peticiones');
+        if($this->logdata->getType() == "SU")
+        {
+            $this->load->view('SU/peticiones');
+        }
+        else
+        {
+            header("Location: /");
+        }
     }
 
     public function SU($id)

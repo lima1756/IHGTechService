@@ -3,15 +3,43 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Tickets extends CI_Controller
 {
+    public function index($id="")
+    {
+        if($this->logdata->getType() == "mortal")
+        {
+            if($id!="")
+            {
+                $this->load->view("mortal/tickets", ["idTicket" => $id]);
+            }
+            else
+            {
+                $this->load->view("mortal/tickets");
+            }
+        }
+        else
+        {
+            headr("Location: /");
+        }
+    }
+
     public function newTicket()
     {
         $idSU = 0;
+        $idMortal = 0;
+        if(isset($_POST['usuario']))
+        {
+            $idMortal = $_POST['usuario'];
+        }
+        else
+        {
+            $idMortal = $this->logdata->getData("id");
+        }
         if(isset($_POST['SUid'])){
             $idSU = $_POST['SUid'];
         }
         else
         {
-            //llamar función de asignación
+            $idSU = $this->toWho();
         }
         $message = $_POST['descripcionForm'];
         $dom = new \DomDocument();
@@ -48,7 +76,7 @@ class Tickets extends CI_Controller
         $message = $dom->saveHTML();
         
         $insert = array(
-            "id_mortal" => $_POST['usuario'],
+            "id_mortal" => $idMortal,
             "pregunta" => $_POST['preguntaForm'],
             "descripcion" => $message
         );
@@ -121,5 +149,46 @@ class Tickets extends CI_Controller
             }
         }
         header('Location: /dashboard/tickets/'. $ticketId);
+    }
+
+    private function toWho()
+    {
+        $SUs = $this->db->query("SELECT id_usuario FROM superusers");
+        $SUs = $SUs->result();
+        $points = array();
+        foreach($SUs as $SU){
+            $points[$SU->id_usuario]=0;
+            $tasks = $this->db->query("SELECT prioridad, COUNT('prioridad') AS count FROM ticket_sus WHERE id_SU = " . $SU->id_usuario . " GROUP BY prioridad");
+            $tasks = $tasks->result();
+            foreach($tasks as $task){
+                if($task->prioridad=="bajo"){
+                    $points[$SU->id_usuario]=$points[$SU->id_usuario] + ($task->count * 1);
+                }
+                elseif($task->prioridad=="medio"){
+                    $points[$SU->id_usuario]=$points[$SU->id_usuario] + ($task->count * 2);
+                }
+                elseif($task->prioridad=="alto"){
+                    $points[$SU->id_usuario]=$points[$SU->id_usuario] + ($task->count * 4);
+                }
+                elseif($task->prioridad == NULL){                   
+                    $points[$SU->id_usuario]=$points[$SU->id_usuario] + ($task->count * 4);
+                }
+            }
+        }
+        $min=99999999;
+        foreach($points as $point){
+            if($point<$min){
+                $min=$point;
+            }
+        }
+        
+        $myKey=0;
+        foreach($points as $key => $point)
+        {
+            if($point==$min){
+                $myKey=$key;
+            }
+        }
+        return $myKey;
     }
 }

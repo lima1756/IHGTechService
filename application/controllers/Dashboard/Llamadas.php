@@ -5,13 +5,20 @@ class Llamadas extends CI_Controller
 {
     public function index($id)
     {
-        if(is_numeric($id))
+        if($this->logdata->getType() == "SU")
         {
-            $this->load->view('SU/llamadas', ['id'=>$id]);
+            if(is_numeric($id))
+            {
+                $this->load->view('SU/llamadas', ['id'=>$id]);
+            }
+            else
+            {
+                header('Location: /dashboard/tickets');
+            }
         }
         else
         {
-            header('Location: /dashboard/tickets');
+            header("Location: /");
         }
     }
 

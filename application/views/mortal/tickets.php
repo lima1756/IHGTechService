@@ -33,6 +33,12 @@
         </style>
         <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.13/css/jquery.dataTables.css">
         <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.13/js/jquery.dataTables.js"></script>
+                <!-- include summernote css/js-->
+        <link href="/dist/summernote.css" rel="stylesheet">
+        <script src="/dist/summernote.js"></script>
+
+        <!-- include summernote-es-ES -->
+        <script src="/dist/lang/summernote-es-ES.js"></script>
         <?php
 if(isset($state))
 if(is_numeric($state))
@@ -134,7 +140,8 @@ if(is_numeric($state))
           <!--Feature-->
         <section id ="feature" class="section-padding">
         <?php
-          $questions = $this->db->query("SELECT * FROM tickets WHERE id_mortal = " . $this->session->id);
+          $questions = $this->db->query("SELECT * FROM tickets WHERE id_mortal = " . $this->logdata->getData("id"));
+          $questions = $questions->result();
         ?>
         <div class="container" style="margin-top:10px;">
             <div class="row">
@@ -167,7 +174,7 @@ if(is_numeric($state))
                       </tr>
                   </thead>
                   <tbody>
-                    <?php foreach ($questions->result() as $q): ?>
+                    <?php foreach ($questions as $q): ?>
                       <tr>
                         <td><label class="btn active">
                             <input type="radio" name='ticket' value="<?php echo $q->id_ticket; ?>" id="<?php echo $q->id_ticket; ?>" style='display:none;'/><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-dot-circle-o fa-2x"></i>
@@ -183,65 +190,65 @@ if(is_numeric($state))
         </div>
         </section>
         <!--/ feature-->
-        <section id="pregunta-container" class="section-padding" style="background-color:#e1e1ea; display:none;">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <span style="float:right;">
-                                    <div class="progress" id="progress">
-                                        <div class="progress-bar progress-bar-danger" id="progressbar" role="progressbar" aria-valuenow="01"
-                                        aria-valuemin="0" aria-valuemax="100" style="width:01%">
-                                            <font color="black" id="barValue">00% Resuelto</font>
-                                        </div>
+    <section id="pregunta-container" class="section-padding" style="display:none;">
+        <div class="container">
+            <div class="row">
+                <div class="col-med-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <span><h2 id="pregunta"></h2><span>
+                        </div>
+                        <div class="panel-body">
+                            <b>Descripcion del problema:</b>
+                            <p id="descripcion"></p>
+                            <div id="adjuntosDesc"></div>
+                            <b>Porcentaje de conclusión</b>
+                                <div class="progress" id="progress">
+                                    <div class="progress-bar progress-bar-danger" id="progressbar" role="progressbar" aria-valuenow="01"
+                                    aria-valuemin="0" aria-valuemax="100" style="width:01%">
+                                        <font color="black" id="barValue">00% Resuelto</font>
                                     </div>
-                                </span>
-                                <span><h2 id="pregunta">YEI</h2><span>
-                            </div>
-                            <div class="panel-body">
-                                <b>Descripcion del problema:</b>
-                                <p id="descripcion">asdfasfds</p>
-                                <b>Imagen subida:</b>
-                                <img class="img-responsive" src="" alt="no-image" id="imgn">
-                            </div>
-                            <div class="panel-footer">
-                                <b>Estado: </b>
-                                <p id="estado-actual">Estado Problema</p>
-                                <b>Detalles</b>
-                                <p id="detalles">Detalles :D</p>
-                            </div>
+                                </div>
+                                <b>Prioridad</b><p id="prioridad" name="prioridad"></p>
+                        </div>
+                        <div class="panel-footer">
+                            <div id="estadosAnteriores" name="estadosAnteriores"></div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+    </section>
 
 
-        <section id="newTicket-Container" class="section-padding" style="background-color:#e1e1ea; display:none;">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h3>Llene los siguientes campos y envie su ticket</h3>
-                        <form method="post" action="/tickets/newTicket" enctype="multipart/form-data">
-                            <div class="form-group">
-                                <label for="preguntaForm">Pregunta:</label>
-                                <input type="text" class="form-control" id="preguntaForm" name="preguntaForm" required/>
-                            </div>
-                            <div class="form-group">
-                                <label for="descripcionForm">Descripcion del problema:</label>
-                                <textarea class="form-control" rows="5" id="descripcionForm" name="descripcionForm" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label">Seleccione una imagen para adjuntar (.jpg o .png)</label>
-                                <input id="imgForm" name="imgForm" type="file" class="file">
-                            </div>
-                            <button type="submit" class="btn btn-success">Enviar</button>
-                        </form>
-                    </div>
+    <section id="newTicket-Container" class="section-padding" style="display:none;">
+        <div class="container">
+            <div class="row">
+                <div class="col-med-12">
+                    <h3>Nuevo ticket</h3>
+                    <form method="post" action="/tickets/newTicket" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="preguntaForm">Pregunta:</label>
+                            <input type="text" class="form-control" id="preguntaForm" name="preguntaForm" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="descripcionForm">Descripcion del problema:</label>
+                            <textarea class="form-control" rows="5" id="descripcionForm" name="descripcionForm" required></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-group-btn">
+                                <span class="btn btn-primary">
+                                    Subir archivos <input type="file" name="files[]" style="display: none;" multiple>
+                                </span>
+                            </label>
+                            <input type="text" class="form-control" readonly>
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-success">Enviar</button>
+                    </form>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
     <footer id="footer" class="footer">
       <div class="container text-center">
 
@@ -286,11 +293,20 @@ if(is_numeric($state))
                   ],
                   "order": [[ 1, "desc" ]]
                 });
-             $('input[type=radio][name=ticket]').change(function() {
+             
+            } );
+            $("#btn_newTicket").click(function(){ 
+                $("input[name=ticket]").prop('checked', false);
+                $('#pregunta-container').hide();
+                $('#newTicket-Container').show();
+            });
+            $('#descripcionForm').summernote({
+                height: 300,
+                lang:   'es-ES'
+            });
+            $('input[type=radio][name=ticket]').on("click",  function() {
                 var id=-1;
-                var xmlhttp;
                 var contenidosRecibidos= new Array();
-                var csrfVal="{{ csrf_token() }}";
                 <?php foreach ($questions as $key => $q): ?>
                     <?php if($key==0): ?>
                         if (this.value == <?php echo $q->id_ticket; ?>) {
@@ -304,38 +320,19 @@ if(is_numeric($state))
                 <?php endforeach; ?>
                 $.ajaxSetup({
                     headers: {
-                        'X-CSRF-TOKEN': csrfVal
                     }
                 })
-                $.post("/ajaxMRT", {
+                $.post("/ajax/ajaxticketsu", {
                     'ticketid': id
                 },
                 function(data, status){
-                    var json = JSON.parse(data);
+                    json = JSON.parse(data);
                     var message = json.descripcion.replace(/\n/g, "<br />");
                     $('#pregunta-container').show();
                     $('#pregunta').html(json.pregunta);
                     $('#descripcion').html(message);
-                });
-                $.post("/ajaxMRTI", {
-                    'ticketid': id
-                },
-                function(data, status){
-                    if(data=="-1"){
-                        $('#imgn').attr("src", "")
-                        $('#imgn').attr('alt', 'No se subió ninguna imagen');
-                    }
-                    else{
-                        var json = JSON.parse(data);
-                        $('#imgn').attr("src", "/storage/ticketImages/" + json.nombre)
-                        $('#imgn').attr('alt', 'img');
-                    }
-                });
-                 $.post("/ajaxMRTSI", {
-                    'ticketid': id
-                },
-                function(data, status){
-                    var json = JSON.parse(data);
+                    $('#estado_actual').val(json.estado);
+                    $('#detalles').val(json.detalles);
                     $('#progressbar').attr("style", "width:"+json.porcentaje+"%");
                     $('#barValue').html(json.porcentaje+"% Resuelto");
                     if(json.porcentaje<60){
@@ -347,32 +344,70 @@ if(is_numeric($state))
                     else if(json.porcentaje<101){
                         $('#progressbar').attr("class", "progress-bar progress-bar-success");
                     }
-                    if (typeof json.estado !== 'undefined') {
-                        $('#estado-actual').html(json.estado);
+                    document.getElementById("prioridad").innerHTML = json.prioridad;
+                    $('#ticket_su').val(json.id_ticketSU);
+                    $('#id_ticket').val(json.id_ticket);
+                    $('#state').val(json.id_estado);
+                    $('#foro').attr("href", "/dashboard/foro/tema/"+json.id_ticketSU)
+                    $('#llamadas').attr("href", "/dashboard/llamadas/"+json.id_ticketSU)
+                    if (typeof json.estados !== 'undefined')
+                    {
+                        var estados = document.getElementById("estadosAnteriores");
+                        
+                        estados.innerHTML = "<h4>Estados anteriores: </h4>";
+                        $.each(json.estados, function(i, item){
+                            var d = new Date(json.estados[i].fecha_hora);
+                            $('#estado_actual').val(json.estados[i].estado);
+                            estados.innerHTML = estados.innerHTML + "<label>" + json.estados[i].estado + " - " + d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " + (d.getHours()+1) + ":" + (d.getMinutes()+1) + ":" + (d.getSeconds()+1) + "</label><br><div>" + (json.estados[i].detalles != null ? json.estados[i].detalles : "") + "</div><hrstyle ='background-color:orange;border:none;'>";
+                            if (typeof json.estados[i].files !== 'undefined')
+                            {
+                                estados.innerHTML = estados.innerHTML +"<p><b>Adjuntos: </b></p><ul>";
+                                $.each(json.estados[i].files, function(k, item){
+                                    estados.innerHTML = estados.innerHTML + "<pre><li><a href='/fileUploads/estados/"+ json.estados[i].files[k].nombreAlmacenado +"'>"+ json.estados[i].files[k].nombreOriginal+ "</a></li></pre>";
+                                });
+                                estados.innerHTML = estados.innerHTML +"</ul>";
+                            }
+                            estados.innerHTML = estados.innerHTML + "<hr style='border-top:1px solid #171717; margin-top:0px;'>"                            
+                        });
                     }
-                    else{
-                        $('#estado-actual').html('Sin asignar');
+                    if(typeof json.files !== "undefined")
+                    {
+                        var adjuntosDesc = document.getElementById("adjuntosDesc");
+                        adjuntosDesc.innerHTML = "<p><b>Archivos adjuntos: </b></p>"
+                        $.each(json.files, function(i, item){
+                            adjuntosDesc.innerHTML = adjuntosDesc.innerHTML + "<pre><li><a href='/fileUploads/tickets/"+ json.files[i].nombreAlmacenado +"'>"+ json.files[i].nombreOriginal+ "</a></li></pre>";
+                        });
                     }
-                    if (typeof json.detalles !== 'undefined') {
-                        if(json.detalles="NULL"){
-                            $('#detalles').html("No hay detalles aun");
-                        }
-                        else{
-                            $('#detalles').html(json.detalles);
-                        }
-                    }
-                    else{
-                        $('#detalles').html('Sin detalles');
+                    else
+                    {
+                        var adjuntosDesc = document.getElementById("adjuntosDesc");
+                        adjuntosDesc.innerHTML = ""
                     }
                 });
-                
             });
-            
-            } );
-            $("#btn_newTicket").click(function(){
-                $('#pregunta-container').hide();
-                $('#newTicket-Container').show();
-            });
+
+              $(document).on('change', ':file', function() {
+    var input = $(this),
+        numFiles = input.get(0).files ? input.get(0).files.length : 1,
+        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+    input.trigger('fileselect', [numFiles, label]);
+  });
+
+  // We can watch for our custom `fileselect` event like this
+  $(document).ready( function() {
+      $(':file').on('fileselect', function(event, numFiles, label) {
+
+          var input = $(this).parents('.input-group').find(':text'),
+              log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+          if( input.length ) {
+              input.val(log);
+          } else {
+              if( log ) alert(log);
+          }
+
+      });
+      });
         </script>
     </body>
 </html>

@@ -5,13 +5,20 @@ class Tickets extends CI_Controller
 {
     public function index($state = "")
     {
-        if($state == "")
+        if($this->logdata->getType() == "SU")
         {
-            $this->load->view('SU/tickets', ['state'=>"all"]);
+            if($state == "")
+            {
+                $this->load->view('SU/tickets', ['state'=>"all"]);
+            }
+            else
+            {
+                $this->load->view('SU/tickets', ['state'=>$state]);
+            }
         }
         else
         {
-            $this->load->view('SU/tickets', ['state'=>$state]);
+            header("Location: /");
         }
     }
 

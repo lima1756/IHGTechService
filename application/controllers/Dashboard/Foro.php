@@ -5,12 +5,26 @@ class Foro extends CI_Controller
 {
     public function index()
     {
-        $this->load->view('SU/foro');
+        if($this->logdata->getType() == "SU")
+        {
+            $this->load->view('SU/foro');
+        }
+        else
+        {
+            header("Location: /");
+        }
     }
 
     public function tema($id)
     {
-        $this->load->view('SU/tema', ['id' => $id]);
+        if($this->logdata->getType() == "SU")
+        {
+            $this->load->view('SU/tema', ['id' => $id]);
+        }
+        else
+        {
+            header("Location: /");
+        }
     }
 
     public function nuevo()

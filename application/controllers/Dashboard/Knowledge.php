@@ -5,7 +5,14 @@ class Knowledge extends CI_Controller
 {
     public function index()
     {
-        $this->load->view('SU/knowledge');
+        if($this->logdata->getType() == "SU")
+        {
+            $this->load->view('SU/knowledge');
+        }
+        else
+        {
+            header("Location: /");
+        }
     }
 
     public function submit()

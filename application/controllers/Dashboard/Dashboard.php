@@ -5,6 +5,13 @@ class Dashboard extends CI_Controller
 {
     public function index()
     {
-        $this->load->view('SU/dashboard');
+        if($this->logdata->getType() == "SU")
+        {
+            $this->load->view('SU/dashboard');
+        }
+        else
+        {
+            header("Location: /");
+        }
     }
 }

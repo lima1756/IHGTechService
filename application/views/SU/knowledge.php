@@ -295,49 +295,7 @@ var json = JSON;
                     $('#input_tema').hide();
                 }
              });
-             //Ajax para obtencion de datos en seleccion
-             $('input[type=radio][name=entrada]').change(function() {
-                <?php foreach ($questions as $key => $q): ?>
-                    <?php if($key==0): ?>
-                        if (this.value == <?php echo $q->id; ?>) {
-                            id=$('input:radio[name=entrada]:checked').val();
-                        }
-                    <?php else: ?>
-                        else if (this.value == <?php echo $q->id; ?>) {
-                            id=$('input:radio[name=entrada]:checked').val();
-                        }
-                    <?php endif; ?>
-                <?php endforeach; ?>
-                $.ajaxSetup({
-                })
-                $.post("/ajax/ajaxFAQ", {
-                    'id': id
-                },
-                function(data, status){
-                    json = JSON.parse(data);
-                    $('#pregunta-container').show();
-                    $('#Titulo').val(json.titulo);
-                    $('#contenido').summernote('code', json.contenido);
-                    $('#resetear').show();
-                    $('#id').val(json.id);
-                    $('#select_tema').val(json.tema);
-                    $('#eliminar').show();
-                    $('#label_input_tema').hide();
-                    $('#input_tema').hide();
-                    $('html, body').animate({
-                        scrollTop: $("#pregunta-container").offset().top
-                    }, 1000);
-                    if (typeof json.files !== 'undefined')
-                    {
-                        var adjuntos = document.getElementById("adjuntos");
-                        adjuntos.innerHTML = "<br><b>Eliminar archivos adjuntos: </b>";
-                        $.each(json.files, function(i, item){
-                            adjuntos.innerHTML = adjuntos.innerHTML + "<br><input type='checkbox' name='adjuntos[]' value='" + json.files[i].id_file + "'/><a href='/fileUploads/knowledge"+json.files[i].nombreAlmacenado +"'>" + json.files[i].nombreOriginal+"</a>";
-                        });
-                    }
-
-                });
-            });
+           
             //Nuevo knowledge
             $("#btn_newQuestiom").click(function(){
                 document.getElementById("adjuntos").innerHTML = "";
@@ -406,6 +364,55 @@ var json = JSON;
 
       });
   });
+
+    //Ajax para obtencion de datos en seleccion
+             $('input[type=radio][name=entrada]').on("click", function() {
+                <?php foreach ($questions as $key => $q): ?>
+                    <?php if($key==0): ?>
+                        if (this.value == <?php echo $q->id; ?>) {
+                            id=$('input:radio[name=entrada]:checked').val();
+                        }
+                    <?php else: ?>
+                        else if (this.value == <?php echo $q->id; ?>) {
+                            id=$('input:radio[name=entrada]:checked').val();
+                        }
+                    <?php endif; ?>
+                <?php endforeach; ?>
+                $.ajaxSetup({
+                })
+                $.post("/ajax/ajaxFAQ", {
+                    'id': id
+                },
+                function(data, status){
+                    json = JSON.parse(data);
+                    $('#pregunta-container').show();
+                    $('#Titulo').val(json.titulo);
+                    $('#contenido').summernote('code', json.contenido);
+                    $('#resetear').show();
+                    $('#id').val(json.id);
+                    $('#select_tema').val(json.tema);
+                    $('#eliminar').show();
+                    $('#label_input_tema').hide();
+                    $('#input_tema').hide();
+                    $('html, body').animate({
+                        scrollTop: $("#pregunta-container").offset().top
+                    }, 1000);
+                    if (typeof json.files !== 'undefined')
+                    {
+                        var adjuntos = document.getElementById("adjuntos");
+                        adjuntos.innerHTML = "<br><b>Eliminar archivos adjuntos: </b>";
+                        $.each(json.files, function(i, item){
+                            adjuntos.innerHTML = adjuntos.innerHTML + "<br><input type='checkbox' name='adjuntos[]' value='" + json.files[i].id_file + "'/><a href='/fileUploads/knowledge/"+json.files[i].nombreAlmacenado +"'>" + json.files[i].nombreOriginal+"</a>";
+                        });
+                    }
+                    else
+                    {
+                        var adjuntos = document.getElementById("adjuntos");
+                        adjuntos.innerHTML = "";
+                    }
+
+                });
+            });
     </script>
     
    
