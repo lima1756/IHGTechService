@@ -44,11 +44,37 @@ class SignUp extends CI_Controller
         }
         if(count($error)==0)
         {
-            $this->db->query("INSERT INTO users (email, password, nombre, apellido, cel, tel, ext, areaTrabajo, trabajo, id_region) 
-            VALUES ('$email', '$pass', '$name', '$last', '$cell', '$tel', '$ext', '$area', '$work', $country)");
+            $insert = array(
+                "email" => $email,
+                "password" => $pass,
+                "nombre" => $name,
+                "apellido" => $last,
+                "cel" =>$cell, 
+                "tel" => $tel, 
+                "ext" => $ext, 
+                "areaTrabajo" => $area, 
+                "trabajo" => $work, 
+                "id_region" => $country
+            );
+            $this->db->insert("users", $insert);
+            if($this->logdata->getData("id") != null)
+            {
+                $IDmortal = $this->db->insert_id();
+                $insert = array(
+                    "id_usuario" => $IDmortal
+                );
+                $this->db->insert("mortals", $insert);
+            }
         }
-        
-        $this->load->view('home', ['error' => $error, 'goTo' => "registro"]);
+
+        if($this->logdata->getData("id") != null)
+        {
+            $this->load->view('SU/newUser', ['error' => $error, 'goTo' => "registro"]);
+        }
+        else
+        {
+            $this->load->view('home', ['error' => $error, 'goTo' => "registro"]);
+        }
     }
     
 

@@ -176,6 +176,10 @@
                 unset($_SESSION['authType']);
                 unset($_COOKIE['sessionKey']);
             }
+            else
+            {
+                return null;
+            }
         }
 
         public function getType()

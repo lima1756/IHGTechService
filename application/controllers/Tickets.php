@@ -102,8 +102,32 @@ class Tickets extends CI_Controller
             "id_estado" => $estadoId
         );
         $this->db->insert('ticketsu_tiene_estado', $insert);
+        
+        if(is_numeric($_POST['SubTemaNuevo']))
+        {
+            
+            $insert = array(
+                "id_ticketSU" => $ticketSUId,
+                "idTema" => $_POST['SubTemaNuevo']
+            );
+            $this->db->insert('ticket_tiene_tema', $insert);
+        }
+        else
+        {
+            $insert = array(
+                "nombre" => $_POST['SubTemaNuevo'],
+                "id_tema" => $_POST['TemaTicketNuevo']
+            );
+            
+            $this->db->insert('sub_temas_ticket', $insert);
+            $temaId = $this->db->insert_id();
 
-
+            $insert = array(
+                "id_ticketSU" => $ticketSUId,
+                "idTema" => $temaId
+            );
+            $this->db->insert('ticket_tiene_tema', $insert);
+        }
         $originalNames=$_FILES['files']['name'];
         $files = $_FILES;
         $count = count($_FILES['files']['name']);

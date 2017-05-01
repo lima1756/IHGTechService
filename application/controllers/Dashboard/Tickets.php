@@ -24,12 +24,16 @@ class Tickets extends CI_Controller
 
     public function update()
     {
-        $update = array(
-            "porcentaje" => $_POST['porcentaje'],
-            "prioridad" => $_POST['prioridad']
-        );
-        $this->db->update('ticket_sus', $update);
-
+        var_dump($_POST);
+        if(isset($_POST['prioridad']))
+        {
+            $update = array(
+                "porcentaje" => $_POST['porcentaje'],
+                "prioridad" => $_POST['prioridad']
+            );
+            $this->db->where('id_ticketSU', $_POST['ticket_su']);
+            $this->db->update('ticket_sus', $update);
+        }
         $message = $_POST['detalles'];
         if($message != "")
         {
@@ -80,6 +84,33 @@ class Tickets extends CI_Controller
         $this->db->insert('ticketsu_tiene_estado', $insert);
         
 
+        if(is_numeric($_POST['SubTema']))
+        {
+            
+            $insert = array(
+                "id_ticketSU" => $_POST['ticket_su'],
+                "idTema" => $_POST['SubTema']
+            );
+            $this->db->where('id_ticketSU', $_POST['ticket_su']);
+            $this->db->update('ticket_tiene_tema', $insert);
+        }
+        else
+        {
+            $insert = array(
+                "nombre" => $_POST['SubTema'],
+                "id_tema" => $_POST['TemaTicket']
+            );
+            
+            $this->db->insert('sub_temas_ticket', $insert);
+            $temaId = $this->db->insert_id();
+
+            $insert = array(
+                "id_ticketSU" => $_POST['ticket_su'],
+                "idTema" => $temaId
+            );
+            $this->db->where('id_ticketSU', $_POST['ticket_su']);
+            $this->db->update('ticket_tiene_tema', $insert);
+        }
         
         $originalNames=$_FILES['files']['name'];
         $files = $_FILES;

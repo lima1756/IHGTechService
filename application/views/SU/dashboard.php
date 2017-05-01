@@ -1,4 +1,4 @@
-<?php
+<?php //http://isotope.metafizzy.co/layout-modes/masonry.html
     $usuarios = $this->db->query("SELECT * FROM (
                                     SELECT supers.* FROM (
                                         SELECT users.* FROM `users` 
@@ -21,7 +21,7 @@
     $estados = $this->db->query("SELECT count(estados.estado) AS conteo, estados.estado FROM estados INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_estado = estados.id_estado   
                                 INNER JOIN ticket_sus ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
-                                AND id_SU = " . $this->logdata->getData("id") . " GROUP BY estados.estado");
+                                 GROUP BY estados.estado");
     $estados = $estados->result();                            
     $total = 0;
     foreach($estados as $p):
@@ -93,6 +93,9 @@
         <link rel="stylesheet" type="text/css" href="/css/dashboard/sb-admin-2.css")/>
 
         <script src="/js/dashboard/jquery.min.js"></script>
+
+        <script src="/js/isotope.js"></script>
+
         <script src="/js/dashboard/bootstrap.min.js"></script>
         <script src="/js/dashboard/metisMenu.min.js"></script>
         <script src="/js/dashboard/raphael.min.js"></script>
@@ -100,6 +103,7 @@
         <script src="/js/dashboard/sb-admin-2.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+
     </head>
     <body style="">
         <div id="wrapper">
@@ -136,38 +140,44 @@
             <!-- /.navbar-top-links -->
 
             <div class="navbar-default sidebar" role="navigation">
-                <div class="sidebar-nav navbar-collapse">
-                    <ul class="nav" id="side-menu">
-                        <li class="divider"></li>
-                        <li>
-                            <a href="/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
-                        </li>
-                        <li>
-                            <?php if($countP>0): ?>
-                            <a href="/dashboard/peticiones" class="alert alert-danger"><i class="fa fa-user fa-fw"></i> Peticiones
-                            <span class="pull-right ">
-                            <?php echo $countP; ?>
-                            </span>
-                            </a>
-                            <?php else: ?>
-                            <a href="/dashboard/peticiones"><i class="fa fa-user fa-fw"></i> Peticiones
-                            </a>
-                            <?php endif; ?>
-                        </li>
-                        <li>
-                            <a href="/dashboard/foro"><i class="fa fa-book"></i> Foro</a>
-                        </li>
-                        <li>
-                            <a href="/dashboard/knowledge"><i class="fa fa-question"></i> Knowledge</a>
-                        </li>
-                        <li>
-                            <a href="/dashboard/tickets/all"><i class="fa fa-file-text"></i> Tickets</a> 
-                        </li>
-                    </ul>
+                    <div class="sidebar-nav navbar-collapse">
+                        <ul class="nav" id="side-menu">
+                            <li class="divider"></li>
+                            <li>
+                                <a href="/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                            </li>
+                            <li>
+                                <?php if($countP>0): ?>
+                                    <a href="/dashboard/peticiones" class="alert alert-danger"><i class="fa fa-user fa-fw"></i> Peticiones
+                                        <span class="pull-right ">
+                                            <?php echo $countP; ?>
+                                        </span>
+                                    </a>
+                                <?php else: ?>
+                                    <a href="/dashboard/peticiones"><i class="fa fa-user fa-fw"></i> Peticiones
+                                    </a>
+                                <?php endif; ?>
+                            </li>
+                            <li>
+                                <a href="/dashboard/newUser"><i class="fa fa-user-plus fa-fw"></i> Nuevo usuario</a> 
+                            </li>
+                            <li>
+                                <a href="/dashboard/foro"><i class="fa fa-book"></i> Foro</a>
+                            </li>
+                            <li>
+                                <a href="/dashboard/knowledge"><i class="fa fa-question"></i> Knowledge</a>
+                            </li>
+                            <li>
+                                <a href="/dashboard/tickets/all"><i class="fa fa-file-text"></i> Tickets</a> 
+                            </li>
+                            <li>
+                                <a href="/dashboard/inventario"><i class="fa fa-briefcase"></i> Inventario</a> 
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- /.sidebar-collapse -->
                 </div>
-                <!-- /.sidebar-collapse -->
-            </div>
-            <!-- /.navbar-static-side -->
+                <!-- /.navbar-static-side -->
         </nav>
 
         <div id="page-wrapper">
@@ -179,8 +189,8 @@
     </div>
         <!-- /.row -->
 
-    <div class="row">
-        <div class="col-lg-6">
+    <div class="row grid">
+        <div class="col-lg-4 grid-item">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-pie-chart fa-fw"></i> Estado de solicitudes
@@ -199,7 +209,8 @@
                 </div>
                 <!-- /.panel-body -->
             </div>
-            
+        </div>
+        <div class="col-lg-4 grid-item">
             <!-- /.panel -->
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -224,7 +235,7 @@
             
         </div>
         <!-- /.col-lg-8 -->
-        <div class="col-lg-6">
+        <div class="col-lg-4 grid-item">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-file-text-o fa-fw"></i> Atrasados
@@ -266,6 +277,8 @@
                 <a href="/dashboard/tickets/bajo"><h4>Baja: </h4> <p><?php echo$atrasados[2]; ?></p></a>
                 </div>
             </div>
+        </div>
+        <div class="col-lg-4 grid-item">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-pie-chart fa-fw"></i> Solicitudes por paises
@@ -284,6 +297,46 @@
             
         </div>
         <!-- /.col-lg-4 -->
+        
+        <div class="col-lg-4 grid-item">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-pie-chart fa-fw"></i> unDash
+                </div>
+                <div class="panel-body">
+                    <div>
+                        <canvas id="" width="400" height="400"></canvas>
+                    </div>
+                    <div class="text-center">
+                        <a href="/dashboard/countriesStats"><button class="btn btn-info">Botones</button></a>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+            
+        </div>
+        <!-- /.col-lg-4 -->
+
+        <div class="col-lg-4 grid-item">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-pie-chart fa-fw"></i> unDash
+                </div>
+                <div class="panel-body">
+                    <div>
+                        <canvas id="" width="400" height="400"></canvas>
+                    </div>
+                    <div class="text-center">
+                        <a href="/dashboard/countriesStats"><button class="btn btn-info">Botones</button></a>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+            
+        </div>
+        <!-- /.col-lg-4 -->
     </div>
     <!-- /.row -->
         </div>
@@ -291,7 +344,12 @@
 
     </div>
     <script>
+        $('.grid').isotope({
+            itemSelector: '.grid-item',
+            
+         
 
+        });
         var estadoS =document.getElementById("estado-solicitud");
         var estadoSolicitudes = new Chart(estadoS, {
             name: 'estadoSolicitudes',

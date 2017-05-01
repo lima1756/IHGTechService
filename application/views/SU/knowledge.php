@@ -116,15 +116,18 @@
                             </li>
                             <li>
                                 <?php if($countP>0): ?>
-                                <a href="/dashboard/peticiones" class="alert alert-danger"><i class="fa fa-user fa-fw"></i> Peticiones
-                                <span class="pull-right ">
-                                <?php echo $countP; ?>
-                                </span>
-                                </a>
+                                    <a href="/dashboard/peticiones" class="alert alert-danger"><i class="fa fa-user fa-fw"></i> Peticiones
+                                        <span class="pull-right ">
+                                            <?php echo $countP; ?>
+                                        </span>
+                                    </a>
                                 <?php else: ?>
-                                <a href="/dashboard/peticiones"><i class="fa fa-user fa-fw"></i> Peticiones
-                                </a>
+                                    <a href="/dashboard/peticiones"><i class="fa fa-user fa-fw"></i> Peticiones
+                                    </a>
                                 <?php endif; ?>
+                            </li>
+                            <li>
+                                <a href="/dashboard/newUser"><i class="fa fa-user-plus fa-fw"></i> Nuevo usuario</a> 
                             </li>
                             <li>
                                 <a href="/dashboard/foro"><i class="fa fa-book"></i> Foro</a>
@@ -134,6 +137,9 @@
                             </li>
                             <li>
                                 <a href="/dashboard/tickets/all"><i class="fa fa-file-text"></i> Tickets</a> 
+                            </li>
+                            <li>
+                                <a href="/dashboard/inventario"><i class="fa fa-briefcase"></i> Inventario</a> 
                             </li>
                         </ul>
                     </div>

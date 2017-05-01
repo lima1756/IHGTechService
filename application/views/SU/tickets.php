@@ -16,6 +16,9 @@
     }
     $mortals = $this->db->query("SELECT users.id, users.email FROM users INNER JOIN mortals ON mortals.id_usuario = users.id");
     $mortals = $mortals->result();
+
+    $temasTickets = $this->db->query("SELECT * FROM temas_tickets");
+    $temasTickets = $temasTickets->result();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -63,7 +66,7 @@
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
-                                                AND ticket_sus.id_SU = ". $this->logdata->getData("id"));
+                                                ");
                 
                 $questions=$questions->result();
             }
@@ -73,7 +76,7 @@
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
-                                                AND ticket_sus.id_SU = ". $this->logdata->getData("id"));
+                                                ");
                 
                 $pendientes = $pendientes->result();
                 $atrasados = array();
@@ -112,7 +115,7 @@
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
                                                 AND estados.estado = '" . $state . "'
-                                                AND ticket_sus.id_SU = ". $this->logdata->getData("id"));
+                                                ");
                 $questions = $questions->result();
             }
             elseif($state == "Nuevo"){
@@ -122,7 +125,7 @@
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
                                                 AND estados.estado = '" . $state . "'
-                                                AND ticket_sus.id_SU = ". $this->logdata->getData("id"));
+                                                ");
                 $questions = $questions->result();
             }
             elseif($state == "Diferido"){
@@ -132,7 +135,7 @@
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
                                                 AND estados.estado = '" . $state . "'
-                                                AND ticket_sus.id_SU = ". $this->logdata->getData("id"));
+                                                ");
                 $questions = $questions->result();
             }
             elseif($state == "Espera"){
@@ -142,7 +145,7 @@
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
                                                 AND estados.estado = '" . $state . "'
-                                                AND ticket_sus.id_SU = ". $this->logdata->getData("id"));
+                                                ");
                 $questions = $questions->result();
             }
             elseif($state == "Completado"){
@@ -152,7 +155,7 @@
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
                                                 AND estados.estado = '" . $state . "'
-                                                AND ticket_sus.id_SU = ". $this->logdata->getData("id"));
+                                                ");
                 $questions = $questions->result();
             }
             elseif(is_numeric($state))
@@ -262,6 +265,9 @@
         <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.13/css/jquery.dataTables.css">
         <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.13/js/jquery.dataTables.js"></script>
 
+        <!-- select2 -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     </head>
     <body style="">
         <div id="wrapper">
@@ -306,15 +312,18 @@
                             </li>
                             <li>
                                 <?php if($countP>0): ?>
-                                <a href="/dashboard/peticiones" class="alert alert-danger"><i class="fa fa-user fa-fw"></i> Peticiones
-                                <span class="pull-right ">
-                                <?php echo $countP; ?>
-                                </span>
-                                </a>
+                                    <a href="/dashboard/peticiones" class="alert alert-danger"><i class="fa fa-user fa-fw"></i> Peticiones
+                                        <span class="pull-right ">
+                                            <?php echo $countP; ?>
+                                        </span>
+                                    </a>
                                 <?php else: ?>
-                                <a href="/dashboard/peticiones"><i class="fa fa-user fa-fw"></i> Peticiones
-                                </a>
+                                    <a href="/dashboard/peticiones"><i class="fa fa-user fa-fw"></i> Peticiones
+                                    </a>
                                 <?php endif; ?>
+                            </li>
+                            <li>
+                                <a href="/dashboard/newUser"><i class="fa fa-user-plus fa-fw"></i> Nuevo usuario</a> 
                             </li>
                             <li>
                                 <a href="/dashboard/foro"><i class="fa fa-book"></i> Foro</a>
@@ -324,6 +333,9 @@
                             </li>
                             <li>
                                 <a href="/dashboard/tickets/all"><i class="fa fa-file-text"></i> Tickets</a> 
+                            </li>
+                            <li>
+                                <a href="/dashboard/inventario"><i class="fa fa-briefcase"></i> Inventario</a> 
                             </li>
                         </ul>
                     </div>
@@ -393,6 +405,9 @@
             </div>
             <form method="POST" action="/dashboard/tickets/update" enctype="multipart/form-data">
                 <div class="panel-body">
+                    <label>Solicitante:</label>
+                    <div id="mortalUser">
+                    </div>
                     <b>Descripcion del problema:</b>
                     <p id="descripcion"></p>
                     <div id="adjuntosDesc"></div>
@@ -408,40 +423,55 @@
                                 <option value="bajo">bajo</option>
                             </select>
                         </div>
+                        <b>Tema: </b>
+                        <div class="form-group">
+                            <select id="TemaTicket" name="TemaTicket" style="width:100%;" class="form-control">
+                                <option></option>
+                                <?php foreach($temasTickets as $t): ?>
+                                    <option value="<?php echo $t->id; ?>"><?php echo $t->nombre; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <b>SubTema: </b>
+                        <div class="form-group">
+                            <select id="SubTema" name="SubTema" class="form-control" style="width:100%;" disabled>
+                                
+                            </select>
+                        </div>
                 </div>
                 <div class="panel-footer">
                     <div id="estadosAnteriores" name="estadosAnteriores"></div>
                     <h4>Actualizar estado:</h4>
                     <b>Estado: </b>
-                        <div class="form-group">
-                            <select id="estado_actual" name="estado_actual" class="form-control">
-                                <option value="Nuevo">Nuevo</option>
-                                <option value="Espera">Espera</option>
-                                <option value="Diferido">Diferido</option>
-                                <option value="Sin resolver">Sin resolver</option>
-                                <option value="Completado">Completado</option>
-                            </select>
-                        </div>
-                        <b>Detalles: </b>
-                        <div class="form-group" >
-                            <textarea name="detalles" id="detalles" class="form-control"></textarea>
-                        </div>
-                        <div class="input-group">
-                            <label class="input-group-btn">
-                                <span class="btn btn-primary">
-                                    Subir archivos <input type="file" name="files[]" style="display: none;" multiple>
-                                </span>
-                            </label>
-                            <input type="text" class="form-control" readonly>
-                        </div>
-                        <br>
-                        <div class="form-group">
-                            <input type="hidden" name="ticket_su" id="ticket_su" value="">
-                            <input type="hidden" name="id_ticket" id="id_ticket" value="">
-                            <input type="submit" class="btn btn-success" value="Guardar"></input>
-                            <a id="foro" href=""><button class="btn btn-info" type="button"> Ir a foro</button></a>
-                            <a id="llamadas" href=""><button class="btn btn-info" type="button"> Ir a llamadas</button></a>
-                        </div>
+                    <div class="form-group">
+                        <select id="estado_actual" name="estado_actual" class="form-control">
+                            <option value="Nuevo">Nuevo</option>
+                            <option value="Espera">Espera</option>
+                            <option value="Diferido">Diferido</option>
+                            <option value="Sin resolver">Sin resolver</option>
+                            <option value="Completado">Completado</option>
+                        </select>
+                    </div>
+                    <b>Detalles: </b>
+                    <div class="form-group" >
+                        <textarea name="detalles" id="detalles" class="form-control"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-group-btn">
+                            <span class="btn btn-primary">
+                                Subir archivos <input type="file" name="files[]" style="display: none;" multiple>
+                            </span>
+                        </label>
+                        <input type="text" class="form-control" readonly>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <input type="hidden" name="ticket_su" id="ticket_su" value="">
+                        <input type="hidden" name="id_ticket" id="id_ticket" value="">
+                        <button class="btn btn-success" id="enviarForm">Guardar</input>
+                        <a id="foro" href=""><button class="btn btn-info" type="button"> Ir a foro</button></a>
+                        <a id="llamadas" href=""><button class="btn btn-info" type="button"> Ir a llamadas</button></a>
+                    </div>
                     
                 </div>
             </form>
@@ -457,6 +487,21 @@
                             <?php foreach($mortals as $m): ?>
                                 <option value="<?php echo $m->id;?>"><?php echo $m->email; ?></option>
                             <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <b>Tema: </b>
+                    <div class="form-group">
+                        <select id="TemaTicketNuevo" name="TemaTicketNuevo" style="width:100%;" class="form-control">
+                            <option></option>
+                            <?php foreach($temasTickets as $t): ?>
+                                <option value="<?php echo $t->id; ?>"><?php echo $t->nombre; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <b>SubTema: </b>
+                    <div class="form-group">
+                        <select id="SubTemaNuevo" name="SubTemaNuevo" class="form-control" style="width:100%;" disabled>
+                            
                         </select>
                     </div>
                     <div class="form-group">
@@ -485,8 +530,92 @@
 <!--FIN TODO -->
 <script>
 
-
+var correo = "";
 var json = JSON;
+    $("#TemaTicket").on("change", function()
+    {
+        TemaNormal();
+    });
+
+    $("#TemaTicket").on("click", function()
+    {
+        TemaNormal();
+    });
+
+    function TemaNormal()
+    {
+        $.ajaxSetup({
+            headers: {
+            },
+            async: false,
+        })
+        $.post("/ajax/ajaxTemas", {
+            'id': $("#TemaTicket").val()
+        },
+        function(data, status){
+            var subtemas = document.getElementById("SubTema");
+            subtemas.innerHTML = "<option></option>"
+            if(data != "")
+            {
+                var datos = JSON.parse(data);
+                if(datos[0].id !== "undefined")
+                {
+                    $.each(datos, function(i, item){
+                        subtemas.innerHTML = subtemas.innerHTML + "<option value='" + datos[i].id + "'>" + datos[i].nombre + "</option>";
+                    });
+                    subtemas.disabled = false;
+                }
+            }
+            else
+            {
+                subtemas.disabled = true;
+            }
+            
+        }
+        );
+    }
+    $("#TemaTicketNuevo").on("click", function()
+    {
+        nuevoTema();
+    });
+
+    $("#TemaTicketNuevo").on("change", function()
+    {
+        nuevoTema();
+    });
+
+    function nuevoTema()
+    {
+        $.ajaxSetup({
+            headers: {
+            },
+            async: false
+        })
+        $.post("/ajax/ajaxTemas", {
+            'id': $("#TemaTicketNuevo").val()
+        },
+        function(data, status){
+            var subtemas = document.getElementById("SubTemaNuevo");
+            subtemas.innerHTML = "<option></option>"
+            if(data != "")
+            {
+                var datos = JSON.parse(data);
+                if(datos[0].id !== "undefined")
+                {
+                    $.each(datos, function(i, item){
+                        subtemas.innerHTML = subtemas.innerHTML + "<option value='" + datos[i].id + "'>" + datos[i].nombre + "</option>";
+                    });
+                    subtemas.disabled = false;
+                }
+            }
+            else
+            {
+                subtemas.disabled = true;
+            }
+            
+        }
+        );
+    }
              $(document).ready( function () {
                  $("input[name=ticket]").prop('checked', false);
                 $("#btn_newTicket").click(function(){
@@ -495,6 +624,45 @@ var json = JSON;
                     $("input[name=ticket]").prop('checked', false);
 
                 });
+
+                $("#TemaTicket").select2({
+                    placeholder: {
+                        id: '-1', // the value of the option
+                        text: 'Seleccionar una opción'
+                    },
+                    
+                    allowClear: true,
+                    
+
+                });
+                $("#SubTema").select2({
+                    placeholder: {
+                        id: '-1', // the value of the option
+                        text: 'Seleccionar una opción'
+                    },
+                    allowClear: true,
+                    tags: true
+                });
+
+                $("#TemaTicketNuevo").select2({
+                    placeholder: {
+                        id: '-1', // the value of the option
+                        text: 'Seleccionar una opción'
+                    },
+                    
+                    allowClear: true,
+                    
+
+                });
+                $("#SubTemaNuevo").select2({
+                    placeholder: {
+                        id: '-1', // the value of the option
+                        text: 'Seleccionar una opción'
+                    },
+                    allowClear: true,
+                    tags: true
+                });
+
                 $('#tickets').DataTable( {
                   "language": {
                       "decimal":        ".",
@@ -598,6 +766,11 @@ var json = JSON;
                     $('#state').val(json.id_estado);
                     $('#foro').attr("href", "/dashboard/foro/tema/"+json.id_ticketSU)
                     $('#llamadas').attr("href", "/dashboard/llamadas/"+json.id_ticketSU)
+                    if(typeof json.user !== "undefined")
+                    {
+                        document.getElementById("mortalUser").innerHTML = "<div style='padding-left:2em;'><p><b>Nombre: </b>" + json.user.nombre + " " + json.user.apellido + "</p>" + "<p><b>Correo:</b>" + json.user.email + "</p>" + "<p><b>Telefono: </b>" + json.user.tel + "</p>" + "<p><b>Extensión:</b>" + json.user.ext + "</p>" + "<p><b>Celular:</b>" + json.user.cel + "</p>"  + "<p><b>Area de trabajo:</b>" + json.user.areaTrabajo + "</p>"  + "<p><b>Trabajo:</b>" + json.user.trabajo + "</p></div>";
+                        correo = json.user.email;
+                    }
                     if (typeof json.estados !== 'undefined')
                     {
                         var estados = document.getElementById("estadosAnteriores");
@@ -631,7 +804,19 @@ var json = JSON;
                         var adjuntosDesc = document.getElementById("adjuntosDesc");
                         adjuntosDesc.innerHTML = ""
                     }
+                    if(typeof json.subtema !== "undefined")
+                    {
+                        $("#TemaTicket").val(json.tema.id).change();
+                        $("#SubTema").val(json.subtema.id);
+                    }
                 });
+            });
+
+            $("#enviarForm").on("click", function()
+            {
+                var contenido = "Estado:\n" + $("#estado_actual").val() + "\n\nActualización:\n" + $("#detalles").summernote("code").replace(/<\/p>/gi, "\n").replace(/<br\/?>/gi, "\n").replace(/<\/?[^>]+(>|$)/g, "");
+                var contenidoURI = encodeURI(contenido);
+                window.open('mailto:' + correo + '?subject=Actualizacion%20de%20ticket&body=' + contenidoURI);
             });
                 </script>
     
