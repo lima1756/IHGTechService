@@ -59,4 +59,7 @@ $route['dashboard/llamadas/(:num)'] = 'dashboard/llamadas/index/$1';
 $route['tickets/(:num)'] = "tickets/index/$1";
 $route['knowledge/(:num)'] = "knowledge/index";
 
+$route['dashboard/inventario/(:any)'] = 'dashboard/inventario/index/$1';
+$route['dashboard/foro/(:num)'] = "dashboard/foro/index";
+
 

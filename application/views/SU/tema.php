@@ -27,10 +27,7 @@
     {
         $mine = $this->db->query("SELECT id_SU FROM ticket_sus WHERE id_ticketSU = " . $id);
         $mine = $mine->result();
-        if($mine[0]->id_SU==$this->logdata->getData("id"))
-        {
             $new = true;
-        }
     }
 ?>
 <!DOCTYPE html>

@@ -14,8 +14,26 @@
     foreach($usuarios->result() as $u){
         $countP++;
     }
-    $items = $this->db->query("SELECT * FROM inventario");
-    $items = $items->result();
+    if($tipo=="proximos")
+    {
+        $items = $this->db->query("SELECT * FROM inventario WHERE CURDATE() BETWEEN DATE_SUB(fechaFinGarantia, INTERVAL 1 MONTH) AND fechaFinGarantia");
+        $items = $items->result();
+    }
+    else if($tipo=="otros")
+    {
+        $items = $this->db->query("SELECT * FROM inventario WHERE CURDATE() < DATE_SUB(fechaFinGarantia, INTERVAL 1 MONTH)");
+        $items = $items->result();
+    }
+    else if($tipo=="vencidos")
+    {
+        $items = $this->db->query("SELECT * FROM inventario WHERE fechaFinGarantia<CURDATE()");
+        $items = $items->result();
+    }
+    else
+    {
+        $items = $this->db->query("SELECT * FROM inventario");
+        $items = $items->result();
+    }
 
     $categorias = $this->db->query("SELECT categoria FROM inventario GROUP BY categoria");
     $categorias = $categorias->result();

@@ -7,7 +7,45 @@ class Foro extends CI_Controller
     {
         if($this->logdata->getType() == "SU")
         {
-            $this->load->view('SU/foro');
+            $this->load->library('pagination');
+            //obtener solo las que se mostraran
+            $this->db->order_by('fecha_hora', 'DESC');
+            $this->db->where('id_nota IS NULL', null, false);
+            $entradas = $this->db->get("foro", "10", $this->uri->segment(3));
+            $data['foro'] = $entradas->result();
+            
+            //obtener el total
+            $this->db->where('id_nota IS NULL', null, false);
+            $total = $this->db->get("foro");
+
+            $config['base_url'] = '/dashboard/foro';
+            $config['total_rows'] = $total->num_rows();
+            $config['per_page'] = 10;
+
+            $config['full_tag_open'] = '<ul class="pagination">';
+            $config['full_tag_close'] = '</ul>';
+
+            $config['first_tag_open'] = '<li>';
+            $config['last_tag_open'] = '<li>';
+
+            $config['next_tag_open'] = '<li>';
+            $config['prev_tag_open'] = '<li>';
+
+            $config['num_tag_open'] = '<li>';
+            $config['num_tag_close'] = '</li>';
+
+            $config['first_tag_close'] = '</li>';
+            $config['last_tag_close'] = '</li>';
+
+            $config['next_tag_close'] = '</li>';
+            $config['prev_tag_close'] = '</li>';
+
+            $config['cur_tag_open'] = '<li class="active"><span><b>';
+            $config['cur_tag_close'] = '</b></span></li>';
+
+            $this->pagination->initialize($config);
+            
+            $this->load->view("SU/foro", $data);
         }
         else
         {

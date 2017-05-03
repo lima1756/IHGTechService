@@ -49,22 +49,22 @@
                 if(isset($_COOKIE['sessionKey']))
                 {
                     var_dump($_COOKIE['sessionKey']);
-                    $this->data = dbConnection::select(["*"], "usuarios", [["sessionKey", $_COOKIE['sessionKey']]]);
-                    if(sizeof(dbConnection::select(["*"], "medicos", [["id_usuario", $this->data[0]['id_usuario']]]))>0)
+                    $this->data = $this->CI->db->query("SELECT * FROM usuarios WHERE sessionKey = '" . $_COOKIE['sessionKey'] . "'");
+                    $this->data = $this->data->result();
+                    if(sizeof($this->CI->db->query("SELECT * FROM superusers WHERE id_usuario = ".$this->data[0]['id'])->result_array()))
                     {
-                        $this->type = "medicos";
+                        $this->type = "SU";
+                        
                     }
-                    elseif(sizeof(dbConnection::select(["*"], "recepcionistas", [["id_usuario", $this->data[0]['id_usuario']]]))>0)
+                    elseif(sizeof($this->CI->db->query("SELECT * FROM mortals WHERE id_usuario = ".$this->data[0]['id'])->result_array()))
                     {
-                        $this->type = "recepcionistas";
+                        $this->type = "mortal";
                     }
-                    elseif(sizeof(dbConnection::select(["*"], "pacientes", [["id_usuario", $this->data[0]['id_usuario']]]))>0)
+                    else
                     {
-                        $this->type = "pacientes";
-                    }
-                    elseif(sizeof(dbConnection::select(["*"], "administradores", [["id_usuario", $this->data[0]['id_usuario']]]))>0)
-                    {
-                        $this->type = "administradores";
+                        $this->type = "";
+                        $this->data = array();
+                        return false;
                     }
                     return true;
                 }

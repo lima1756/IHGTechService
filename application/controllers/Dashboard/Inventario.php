@@ -3,9 +3,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Inventario extends CI_Controller
 {
-    public function index()
+    public function index($tipo="")
     {
-        $this->load->view("SU/inventario");
+        $this->load->view("SU/inventario", ["tipo" => $tipo]);
     }
 
     public function newItem()

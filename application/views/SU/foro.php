@@ -14,7 +14,7 @@
     foreach($usuarios->result() as $u){
         $countP++;
     }
-    $foro = $this->db->query('SELECT * FROM foro WHERE id_nota IS NULL');
+    //$foro = $this->db->query('SELECT * FROM foro WHERE id_nota IS NULL');
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -137,7 +137,7 @@
         </div>
         <section id="pregunta-container" class="section-padding">
             <div class="panel panel-default">
-                <?php foreach($foro->result() as $f): ?>
+                <?php foreach($foro as $f): ?>
                     <?php
                         $name = $this->db->query("SELECT nombre FROM users WHERE id=".$f->id_SU);
                         $name = $name->result();
@@ -149,7 +149,9 @@
                         <p><b>Escrito por:</b> <?php echo $name[0]->nombre; ?></p>
                     </div>
                 <?php endforeach; ?>
+                
             </div>
+            <?php echo $this->pagination->create_links();?>
         </section>
     </div>
 <!--FIN TODO -->

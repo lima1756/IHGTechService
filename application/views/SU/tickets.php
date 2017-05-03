@@ -468,9 +468,9 @@
                     <div class="form-group">
                         <input type="hidden" name="ticket_su" id="ticket_su" value="">
                         <input type="hidden" name="id_ticket" id="id_ticket" value="">
-                        <button class="btn btn-success" id="enviarForm">Guardar</input>
-                        <a id="foro" href=""><button class="btn btn-info" type="button"> Ir a foro</button></a>
+                        <button class="btn btn-success" id="enviarForm">Guardar</button>
                         <a id="llamadas" href=""><button class="btn btn-info" type="button"> Ir a llamadas</button></a>
+                        <a id="foro" href=""><button class="btn btn-info" type="button"> Ir a foro</button></a>
                     </div>
                     
                 </div>
@@ -764,8 +764,11 @@ var json = JSON;
                     $('#ticket_su').val(json.id_ticketSU);
                     $('#id_ticket').val(json.id_ticket);
                     $('#state').val(json.id_estado);
-                    $('#foro').attr("href", "/dashboard/foro/tema/"+json.id_ticketSU)
-                    $('#llamadas').attr("href", "/dashboard/llamadas/"+json.id_ticketSU)
+                    
+                    $('#llamadas').attr("href", "/dashboard/llamadas/"+json.id_ticketSU);
+                    document.getElementById("foro").href="/dashboard/foro/tema/"+json.id_ticketSU;
+                    $('#foro').attr("href", "/dashboard/foro/tema/"+json.id_ticketSU);
+                    $('#foro').prop("href", "/dashboard/foro/tema/"+json.id_ticketSU);
                     if(typeof json.user !== "undefined")
                     {
                         document.getElementById("mortalUser").innerHTML = "<div style='padding-left:2em;'><p><b>Nombre: </b>" + json.user.nombre + " " + json.user.apellido + "</p>" + "<p><b>Correo:</b>" + json.user.email + "</p>" + "<p><b>Telefono: </b>" + json.user.tel + "</p>" + "<p><b>Extensión:</b>" + json.user.ext + "</p>" + "<p><b>Celular:</b>" + json.user.cel + "</p>"  + "<p><b>Area de trabajo:</b>" + json.user.areaTrabajo + "</p>"  + "<p><b>Trabajo:</b>" + json.user.trabajo + "</p></div>";
