@@ -1,4 +1,4 @@
-<?php //http://isotope.metafizzy.co/layout-modes/masonry.html
+<?php 
     $usuarios = $this->db->query("SELECT * FROM (
                                     SELECT supers.* FROM (
                                         SELECT users.* FROM `users` 
@@ -78,14 +78,7 @@
         $conteos['Sin resolver']=0;
     }
 
-    $invetarioVencidos = $this->db->query("SELECT id_inventario FROM inventario WHERE fechaFinGarantia<CURDATE()");
-    $invetarioVencidos = sizeof($invetarioVencidos->result());
 
-    $invetarioProximos = $this->db->query("SELECT id_inventario FROM inventario WHERE CURDATE() BETWEEN DATE_SUB(fechaFinGarantia, INTERVAL 1 MONTH) AND fechaFinGarantia");
-    $invetarioProximos = sizeof($invetarioProximos->result());
-
-    $invetarioSin = $this->db->query("SELECT id_inventario FROM inventario WHERE CURDATE() < DATE_SUB(fechaFinGarantia, INTERVAL 1 MONTH)");
-    $invetarioSin = sizeof($invetarioSin->result());
 /*
     */
 ?>
@@ -308,16 +301,14 @@
         <div class="col-lg-4 grid-item">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-pie-chart fa-fw"></i> Inventario
+                    <i class="fa fa-pie-chart fa-fw"></i> unDash
                 </div>
                 <div class="panel-body">
                     <div>
-                        <canvas id="Inventario" width="400" height="400"></canvas>
+                        <canvas id="" width="400" height="400"></canvas>
                     </div>
                     <div class="text-center">
-                        <a href="/dashboard/inventario/proximos"><button class="btn btn-info">Proximos a vencer </button></p></a>
-                        <a href="/dashboard/tickets/otros"><button class="btn btn-info">Vigentes </button> <p></p></a>
-                        <a href="/dashboard/tickets/vencidos"><button class="btn btn-info">Vencidos </button> <p></p></a>
+                        <a href="/dashboard/countriesStats"><button class="btn btn-info">Botones</button></a>
                     </div>
                 </div>
                 <!-- /.panel-body -->
@@ -419,23 +410,6 @@
             }
         });
         
-
-        var solicitudes =document.getElementById("Inventario");
-        var graficaSolicitudes = new Chart(solicitudes, {
-            name: 'graficaInventario',
-            type: 'pie',
-            data: {
-                labels: ["Proximos a vencer", "Vigentes", "Vencidos"],
-                datasets: [
-                    {
-                        backgroundColor : ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(54, 162, 150, 0.5)'],
-                        hoverBackgroundColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(54, 162, 150, 1)'],
-                        data : [<?php echo ($invetarioProximos .",". $invetarioSin. "," .$invetarioVencidos); ?>]
-                    }    
-                ]
-            },
-            options: {}
-        });
     </script>
     </body>
 </html>
