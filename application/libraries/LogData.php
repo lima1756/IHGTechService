@@ -48,9 +48,8 @@
                 }
                 if(isset($_COOKIE['sessionKey']))
                 {
-                    var_dump($_COOKIE['sessionKey']);
-                    $this->data = $this->CI->db->query("SELECT * FROM usuarios WHERE sessionKey = '" . $_COOKIE['sessionKey'] . "'");
-                    $this->data = $this->data->result();
+                    $this->data = $this->CI->db->query("SELECT * FROM users WHERE remember_token = '" . $_COOKIE['sessionKey'] . "'");
+                    $this->data = $this->data->result_array();
                     if(sizeof($this->CI->db->query("SELECT * FROM superusers WHERE id_usuario = ".$this->data[0]['id'])->result_array()))
                     {
                         $this->type = "SU";

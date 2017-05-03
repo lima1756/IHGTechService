@@ -57,9 +57,9 @@ class SignUp extends CI_Controller
                 "id_region" => $country
             );
             $this->db->insert("users", $insert);
+            $IDmortal = $this->db->insert_id();
             if($this->logdata->getData("id") != null)
             {
-                $IDmortal = $this->db->insert_id();
                 $insert = array(
                     "id_usuario" => $IDmortal
                 );

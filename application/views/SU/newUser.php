@@ -251,7 +251,7 @@
                 
                 <div class="form-group">
                     <select class="form-control" name="country" id="country" value="<?php echo set_value('country'); ?>">
-                            <option value="null">Seleccione su país</option>
+                            <option value="null">Seleccione su Estado</option>
                         <?php foreach ($items->result() as $item): ?>
                             <option value='<?php echo $item->id ?>'><?php echo $item->name ?></option>
                         <?php endforeach; ?>

@@ -5,5 +5,6 @@ class CountriesStats extends CI_Controller
 {
     public function index($state = "")
     {
+        $this->load->view("SU/countriesStats");
     }
 }

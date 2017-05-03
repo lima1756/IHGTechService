@@ -327,25 +327,6 @@
         </div>
         <!-- /.col-lg-4 -->
 
-        <div class="col-lg-4 grid-item">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <i class="fa fa-pie-chart fa-fw"></i> unDash
-                </div>
-                <div class="panel-body">
-                    <div>
-                        <canvas id="" width="400" height="400"></canvas>
-                    </div>
-                    <div class="text-center">
-                        <a href="/dashboard/countriesStats"><button class="btn btn-info">Botones</button></a>
-                    </div>
-                </div>
-                <!-- /.panel-body -->
-            </div>
-            <!-- /.panel -->
-            
-        </div>
-        <!-- /.col-lg-4 -->
     </div>
     <!-- /.row -->
         </div>
