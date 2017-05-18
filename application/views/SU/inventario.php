@@ -94,12 +94,7 @@
         <script src="/js/dashboard/sb-admin-2.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
-        <!-- include summernote css/js-->
-        <link href="/dist/summernote.css" rel="stylesheet">
-        <script src="/dist/summernote.js"></script>
 
-        <!-- include summernote-es-ES -->
-        <script src="/dist/lang/summernote-es-ES.js"></script>
 
         <!-- include dataTables -->
         <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.13/css/jquery.dataTables.css">
@@ -196,11 +191,13 @@
         </div>
     </div>
   <br>
+
     <div class="row">
         <div class="col-lg-12">
-           <table id="inventario" class="display nowrap" width="100%">
+           <table id="inventario" class="table table-striped table-hover dt-responsive">
                 <thead>
                     <tr>
+                        <th>Seleccionar</th>
                         <th>Categoria</th>
                         <th>Marca</th>
                         <th>Modelo</th>
@@ -217,6 +214,9 @@
                         <?php $usuario = $this->db->query("SELECT email FROM users INNER JOIN usuario_tiene_inventario ON id=id_usuario INNER JOIN inventario on inventario.id_inventario = usuario_tiene_inventario.id_inventario WHERE inventario.id_inventario = " . $t->id_inventario);
                         $usuario = $usuario->result(); ?>
                         <tr>
+                            <td><label class="btn active">
+                                <input type="radio" name="item" value="<?php echo $t->id_inventario; ?>" id="<?php echo "radio" . $t->id_inventario; ?>" style='display:none;' hidden/><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-dot-circle-o fa-2x"></i>
+                            </label></td>
                             <td><?php echo $t->categoria; ?></td>
                             <td><?php echo $t->Marca; ?></td>
                             <td><?php echo $t->Modelo; ?></td>
@@ -235,7 +235,8 @@
     <!-- /.row -->
     <section id="newItem-Container" class="section-padding" style="display:none;">
                 <h3>Nuevo item</h3>
-                <form method="post" action="/dashboard/inventario/newItem">
+                <form method="post" action="/dashboard/inventario/newItem" id="formData" name="formData">
+                    <input type="hidden" id="id_inventario" name="id_inventario"/>
                     <div class="form-group">
                         <label for="categoria">Categoria:</label>
                         <select id="categoria" name="categoria" style="width:100%;" class="form-control">
@@ -284,8 +285,12 @@
                         </select>
                     </div>
                     <br>
-                    <div class="form-group">
+                    <div class="form-group" id="inventarioButton">
                         <input type="submit" class="btn btn-success" value="Guardar"/>
+                    </div>
+                    <div class="form-group" id="bottons" name="buttons">
+                        <button class="btn btn-success" id="save" name="save" onclick="return changeDirSave();">Guardar</button>
+                        <button class="btn btn-danger" id="delete" name="delete" onclick="return changeDirDelete();">Eliminar</button>
                     </div>
                     
                 </form>
@@ -294,6 +299,81 @@
 </div>
 <!--FIN TODO -->
     <script>
+        
+        $(document).ready( function () {
+            $('#inventario').DataTable( {
+                "language": {
+                    "decimal":        ".",
+                    "lengthMenu": "Mostrar _MENU_ items por página",
+                    "zeroRecords": "Nada encontrado - lo sentimos",
+                    "info": "Mostrando items _PAGE_ de _PAGES_",
+                    "infoEmpty": "No hay registros disponibles",
+                    "infoFiltered": "(Filtrando de _MAX_ registros)",
+                    "loadingRecords": "Cargando...",
+                    "processing":     "Procesando...",
+                    "search":         "Buscar:",
+                    "paginate": {
+                        "first":      "Primero",
+                        "last":       "Ultimo",
+                        "next":       "Siguiente",
+                        "previous":   "Anterior"
+                    }
+                },
+                responsive: true,
+                autoWidth: false,
+            });
+            
+            
+             $("#categoria").select2({
+                placeholder: {
+                    id: '-1', // the value of the option
+                    text: 'Seleccionar una opción'
+                },
+                allowClear: true,
+                tags: true
+            });
+            $("#Marca").select2({
+                placeholder: {
+                    id: '-1', // the value of the option
+                    text: 'Seleccionar una opción'
+                },
+                allowClear: true,
+                tags: true
+            });
+            $("#Modelo").select2({
+                placeholder: {
+                    id: '-1', // the value of the option
+                    text: 'Seleccionar una opción'
+                },
+                allowClear: true,
+                tags: true
+            });
+            $("#usuarios").select2({
+                tags: true
+            });
+        });
+
+        $("#newItem").on("click", function(){
+            $("#id_inventario").val(json.id_inventario);
+                    
+            $("#categoria").val("").trigger('change');
+            $("#Marca").val("").trigger('change');
+            $("#Modelo").val("").trigger('change');
+            $("#serie").val("");
+            $("#service").val("");
+            $("#compra").val("").trigger('change');
+            $("#inicio").val("").trigger('change');
+            $("#fin").val("").trigger('change');
+
+            idUsers =[];
+            $('#usuarios').val(idUsers).trigger("change");
+            $("#inventarioButton").show();
+            $("#bottons").hide();
+            $("#newItem-Container").show();
+            $('html, body').animate({
+                scrollTop: $("#newItem-Container").offset().top
+            }, 1000);
+        });
         $("#categoria").on("change", function()
         {
             obtenerMarcas();
@@ -355,63 +435,67 @@
             }
             );
         }
-        $(document).ready( function () {
-            $('#inventario').DataTable( {
-                "language": {
-                    "decimal":        ".",
-                    "lengthMenu": "Mostrar _MENU_ items por página",
-                    "zeroRecords": "Nada encontrado - lo sentimos",
-                    "info": "Mostrando items _PAGE_ de _PAGES_",
-                    "infoEmpty": "No hay registros disponibles",
-                    "infoFiltered": "(Filtrando de _MAX_ registros)",
-                    "loadingRecords": "Cargando...",
-                    "processing":     "Procesando...",
-                    "search":         "Buscar:",
-                    "paginate": {
-                        "first":      "Primero",
-                        "last":       "Ultimo",
-                        "next":       "Siguiente",
-                        "previous":   "Anterior"
+
+        $('input[type=radio][name=item]').on("click", function() {
+                $('#pregunta-container').show();
+                $('#newTicket-Container').hide();
+                <?php foreach ($items as $key => $q): ?>
+                    <?php if($key==0): ?>
+                        if (this.value == <?php echo $q->id_inventario; ?>) {
+                            id=$('input:radio[name=item]:checked').val();
+                        }
+                    <?php else: ?>
+                        else if (this.value == <?php echo $q->id_inventario; ?>) {
+                            id=$('input:radio[name=item]:checked').val();
+                        }
+                    <?php endif; ?>
+                <?php endforeach; ?>
+                $.ajaxSetup({
+                    headers: {
                     }
-                }
-                  
-            });
-             $("#categoria").select2({
-                placeholder: {
-                    id: '-1', // the value of the option
-                    text: 'Seleccionar una opción'
+                })
+                $.post("/ajax/ajaxinventario/item", {
+                    'id': id
                 },
-                allowClear: true,
-                tags: true
+                function(data, status){
+                    $("#inventarioButton").hide();
+                    $("#bottons").show();
+                    json = JSON.parse(data);
+                    users = json.users;
+                    json = json.items;
+                    $("#id_inventario").val(json.id_inventario);
+                    
+                    $("#categoria").val(json.categoria).trigger('change');
+                    $("#Marca").val(json.Marca).trigger('change');
+                    $("#Modelo").val(json.Modelo).trigger('change');
+                    $("#serie").val(json.noSerie);
+                    $("#service").val(json.serviceTag);
+                    $("#compra").val(json.fechaCompra);
+                    $("#inicio").val(json.fechaInicioGarantia);
+                    $("#fin").val(json.fechaFinGarantia);
+                    $("#newItem-Container").show();
+                    $('html, body').animate({
+                        scrollTop: $("#newItem-Container").offset().top
+                    }, 1000);
+                    idUsers =[];
+                    for(i = 0; i < users.length; i++)
+                    {
+                        idUsers.push(users[i].id);
+                    }
+                    console.log(idUsers);
+                    $('#usuarios').val(idUsers).trigger("change");
+                    //$('#usuarios').select2({}).select2('val', idUsers);  
+                });
             });
-            $("#Marca").select2({
-                placeholder: {
-                    id: '-1', // the value of the option
-                    text: 'Seleccionar una opción'
-                },
-                allowClear: true,
-                tags: true
-            });
-            $("#Modelo").select2({
-                placeholder: {
-                    id: '-1', // the value of the option
-                    text: 'Seleccionar una opción'
-                },
-                allowClear: true,
-                tags: true
-            });
-            $("#usuarios").select2({
-                tags: true
-            });
-        });
 
-        $("#newItem").on("click", function(){
-            $("#newItem-Container").show();
-            $('html, body').animate({
-                scrollTop: $("#newItem-Container").offset().top
-            }, 1000);
-        });
-
+            function changeDirSave(){
+                document.getElementById("formData").action= "/dashboard/inventario/alterItem";
+                document.getElementById("formData").submit();
+            }
+            function changeDirDelete(){
+                document.getElementById("formData").action = "/dashboard/inventario/deleteItem";
+                document.getElementById("formData").submit();
+            }
     </script>
     
    
