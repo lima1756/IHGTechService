@@ -316,8 +316,8 @@
                     </div>
                     <div class="text-center">
                         <a href="/dashboard/inventario/proximos"><button class="btn btn-info">Proximos a vencer </button></p></a>
-                        <a href="/dashboard/tickets/otros"><button class="btn btn-info">Vigentes </button> <p></p></a>
-                        <a href="/dashboard/tickets/vencidos"><button class="btn btn-info">Vencidos </button> <p></p></a>
+                        <a href="/dashboard/inventario/otros"><button class="btn btn-info">Vigentes </button> <p></p></a>
+                        <a href="/dashboard/inventario/vencidos"><button class="btn btn-info">Vencidos </button> <p></p></a>
                     </div>
                 </div>
                 <!-- /.panel-body -->
