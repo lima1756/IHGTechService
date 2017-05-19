@@ -127,19 +127,32 @@
                             </li>
                             <li>
                                 <?php if($countP>0): ?>
-                                    <a href="/dashboard/peticiones" class="alert alert-danger"><i class="fa fa-user fa-fw"></i> Peticiones
-                                        <span class="pull-right ">
-                                            <?php echo $countP; ?>
-                                        </span>
+                                    <a href="#" class="alert alert-danger"><i class="fa fa-exclamation fa-fw"></i> Usuarios<span class="fa arrow"></span>
                                     </a>
                                 <?php else: ?>
-                                    <a href="/dashboard/peticiones"><i class="fa fa-user fa-fw"></i> Peticiones
-                                    </a>
+                                    <a href="#"><i class="fa fa-user fa-fw"></i> Usuarios<span class="fa arrow"></span></a>
                                 <?php endif; ?>
+                                <ul class="nav nav-second-level">
+                                    <li>
+                                        <?php if($countP>0): ?>
+                                            <a href="/dashboard/peticiones" class="alert alert-danger"><i class="fa fa-user fa-fw"></i> Peticiones
+                                                <span class="pull-right ">
+                                                    <?php echo $countP; ?>
+                                                </span>
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="/dashboard/peticiones"><i class="fa fa-user fa-fw"></i> Peticiones
+                                            </a>
+                                        <?php endif; ?>
+                                    </li>
+                                    <li>
+                                        <a href="/dashboard/users"><i class="fa fa-users fa-fw"></i> Todos los usuario</a> 
+                                    </li>
+                                </ul>
+                                <!-- /.nav-second-level -->
                             </li>
-                            <li>
-                                <a href="/dashboard/newUser"><i class="fa fa-user-plus fa-fw"></i> Nuevo usuario</a> 
-                            </li>
+                            
+                            
                             <li>
                                 <a href="/dashboard/foro"><i class="fa fa-book"></i> Foro</a>
                             </li>

@@ -146,7 +146,7 @@
             </ul>
             <!-- /.navbar-top-links -->
 
-            <div class="navbar-default sidebar" role="navigation">
+                <div class="navbar-default sidebar" role="navigation">
                     <div class="sidebar-nav navbar-collapse">
                         <ul class="nav" id="side-menu">
                             <li class="divider"></li>
@@ -154,7 +154,12 @@
                                 <a href="/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                             </li>
                             <li>
-                                <a href="#"><i class="fa fa-user fa-fw"></i> Usurios<span class="fa arrow"></span></a>
+                                <?php if($countP>0): ?>
+                                    <a href="#" class="alert alert-danger"><i class="fa fa-exclamation fa-fw"></i> Usuarios<span class="fa arrow"></span>
+                                    </a>
+                                <?php else: ?>
+                                    <a href="#"><i class="fa fa-user fa-fw"></i> Usuarios<span class="fa arrow"></span></a>
+                                <?php endif; ?>
                                 <ul class="nav nav-second-level">
                                     <li>
                                         <?php if($countP>0): ?>
