@@ -55,6 +55,7 @@ $route['translate_uri_dashes'] = FALSE;
 $route['dashboard'] = 'dashboard/dashboard';
 $route['dashboard/tickets/update'] = 'dashboard/tickets/update';
 $route['dashboard/tickets/(:any)'] = 'dashboard/tickets/index/$1';
+$route['dashboard/tickets/usuario/(:num)'] = 'dashboard/tickets/usuario/$1';
 $route['dashboard/llamadas/(:num)'] = 'dashboard/llamadas/index/$1';
 $route['tickets/(:num)'] = "tickets/index/$1";
 $route['knowledge/(:num)'] = "knowledge/index";
@@ -62,7 +63,9 @@ $route['knowledge/(:num)'] = "knowledge/index";
 $route['dashboard/inventario/newItem'] = 'dashboard/inventario/newItem';
 $route['dashboard/inventario/deleteItem'] = 'dashboard/inventario/deleteItem';
 $route['dashboard/inventario/alterItem'] = 'dashboard/inventario/alterItem';
+$route['dashboard/inventario/(:num)'] = 'dashboard/inventario/user/$1';
 $route['dashboard/inventario/(:any)'] = 'dashboard/inventario/index/$1';
+
 
 
 $route['dashboard/foro/(:num)'] = "dashboard/foro/index";

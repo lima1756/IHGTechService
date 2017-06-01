@@ -14,10 +14,38 @@
     foreach($usuarios->result() as $u){
         $countP++;
     }
-    $paises = $this->db->query("SELECT count(id_mortal) AS totales , countries.name, countries.id 
-                                FROM tickets INNER JOIN users ON users.id = tickets.id_mortal INNER JOIN countries ON users.id_region = countries.id
+
+
+    $usuarios = $this->db->query("SELECT count(id_ticket) AS totales , users.* 
+                                FROM users INNER JOIN tickets ON users.id = tickets.id_mortal
                                 GROUP BY id_mortal");
-    $paises = $paises->result();
+    $usuarios = $usuarios->result();
+    
+    $count = array();
+    foreach($usuarios as $u){
+        if(isset($count[$u->id])){
+            $count[$u->id][0]+=$u->totales;
+        }
+        else{
+            $count[$u->id]=[0, $u->email, $u->id];
+            $count[$u->id][0]+=$u->totales;
+        }
+    }
+    $misUsuarios = array();
+    $misConteos = array();
+    $misColores = array();
+    $misColores2 = array();
+    foreach($count as $c):
+        array_push($misUsuarios, $c[2] . " " . $c[1]);
+        array_push($misConteos, $c[0]);
+        $uno = rand(1,255);
+        $dos = rand(1,255);
+        $tres = rand(1,255);
+        array_push($misColores, 'rgba('.$uno.', '.$dos.', '.$tres.', 0.5)');
+        array_push($misColores2, 'rgba('.$uno.', '.$dos.', '.$tres.', 1)');
+    endforeach;
+
+    
     $estados = $this->db->query("SELECT count(estados.estado) AS conteo, estados.estado FROM estados INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_estado = estados.id_estado   
                                 INNER JOIN ticket_sus ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
@@ -28,29 +56,6 @@
         if($p->estado == "Completado" || $p->estado == "Sin resolver"):
             $total+=$p->conteo;
         endif;
-    endforeach;
-    $count = array();
-    foreach($paises as $pais){
-        if(isset($count[$pais->id])){
-            $count[$pais->id][0]+=$pais->totales;
-        }
-        else{
-            $count[$pais->id]=[0, $pais->name];
-            $count[$pais->id][0]+=$pais->totales;
-        }
-    }
-    $misPaises = array();
-    $misConteos = array();
-    $misColores = array();
-    $misColores2 = array();
-    foreach($count as $c):
-        array_push($misPaises, $c[1]);
-        array_push($misConteos, $c[0]);
-        $uno = rand(1,255);
-        $dos = rand(1,255);
-        $tres = rand(1,255);
-        array_push($misColores, 'rgba('.$uno.', '.$dos.', '.$tres.', 0.5)');
-        array_push($misColores2, 'rgba('.$uno.', '.$dos.', '.$tres.', 1)');
     endforeach;
     $conteos = array();   
     foreach($estados as $p)
@@ -221,11 +226,6 @@
                         <canvas id="estado-solicitud" width="400" height="400"></canvas>
                     
                     </div>
-                    <div class="text-center">
-                            <a href="/dashboard/tickets/Espera"><button class="btn btn-info">Ver en espera</button></a>
-                            <a href="/dashboard/tickets/Nuevo"><button class="btn btn-info">Ver nuevos</button></a>
-                            <a href="/dashboard/tickets/Diferido"><button class="btn btn-info">Ver diferidos</button></a>
-                        </div>
                 </div>
                 <!-- /.panel-body -->
             </div>
@@ -243,11 +243,6 @@
                         <div>
                             <canvas id="solicitudes" width="400" height="400"></canvas>
                         </div>
-                        <div class="text-center">
-                            <a href="/dashboard/tickets/Completado"><button class="btn btn-info">Ver Completadas</button></a>
-                            <a href="/dashboard/tickets/Sin_resolver"><button class="btn btn-info">Ver Sin resolver</button></a>
-                            <a href="/dashboard/tickets/all"><button class="btn btn-info">Ver Total</button></a>
-                        </div>
                 </div>
                 <!-- /.panel-body -->
             </div>
@@ -261,8 +256,10 @@
                     <i class="fa fa-file-text-o fa-fw"></i> Atrasados
                 </div>
                 <?php 
-                    $pendientes = $this->db->query("SELECT TIME_TO_SEC(TIMEDIFF(NOW(), ticketsu_tiene_estado.fecha_hora)) as secs , prioridad, estado FROM ticket_sus INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU   
+                    $pendientes = $this->db->query("SELECT TIME_TO_SEC(TIMEDIFF(NOW(), tickets.fecha_hora)) as secs , prioridad, estado FROM ticket_sus 
+                                INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU   
                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
+                                INNER JOIN tickets ON tickets.id_ticket = ticket_sus.id_ticket
                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
                                 AND id_SU = ". $this->logdata->getData("id"));
                     $pendientes = $pendientes->result();
@@ -270,9 +267,10 @@
                     $atrasados[0]=0;
                     $atrasados[1]=0;
                     $atrasados[2]=0;
+                    
                     foreach($pendientes as $pendiente){
                         if($pendiente->estado!='Diferido' && $pendiente->estado!='Completado' && $pendiente->estado!='Sin Resolver')
-                        if($pendiente->prioridad=="alto"){
+                        if($pendiente->prioridad=="alto" || $pendiente->prioridad==null){
                             if($pendiente->secs > 86400){
                                 $atrasados[0]++;
                             }
@@ -301,14 +299,11 @@
         <div class="col-lg-4 grid-item">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-pie-chart fa-fw"></i> Solicitudes por paises
+                    <i class="fa fa-pie-chart fa-fw"></i> Solicitudes por usuarios
                 </div>
                 <div class="panel-body">
                     <div>
-                        <canvas id="paises" width="400" height="400"></canvas>
-                    </div>
-                    <div class="text-center">
-                        <a href="/dashboard/countriesStats"><button class="btn btn-info">Ver informacion</button></a>
+                        <canvas id="usuarios" width="400" height="400"></canvas>
                     </div>
                 </div>
                 <!-- /.panel-body -->
@@ -326,11 +321,6 @@
                 <div class="panel-body">
                     <div>
                         <canvas id="Inventario" width="400" height="400"></canvas>
-                    </div>
-                    <div class="text-center">
-                        <a href="/dashboard/inventario/proximos"><button class="btn btn-info">Proximos a vencer </button></p></a>
-                        <a href="/dashboard/inventario/otros"><button class="btn btn-info">Vigentes </button> <p></p></a>
-                        <a href="/dashboard/inventario/vencidos"><button class="btn btn-info">Vencidos </button> <p></p></a>
                     </div>
                 </div>
                 <!-- /.panel-body -->
@@ -370,12 +360,27 @@
             options: {}
         });
 
-        var paises =document.getElementById("paises");
-        var graficaPaises = new Chart(paises, {
-            name: 'graficaPaises',
+        estadoS.onclick = function (evt) {
+            var activePoints = estadoSolicitudes.getElementsAtEvent(evt);
+            var chartData = activePoints[0]['_chart'].config.data;
+            var idx = activePoints[0]['_index'];
+
+            var label = chartData.labels[idx];
+            if(label=="Espera")
+                var url = "/dashboard/tickets/Espera";
+            else if(label=="Nuevos")
+                var url = "/dashboard/tickets/Nuevo";
+            else if(label=="Diferidos")
+                var url = "/dashboard/tickets/Diferido";
+            window.location.href = url;
+        };
+
+        var usuarios =document.getElementById("usuarios");
+        var graficaUsuarios = new Chart(usuarios, {
+            name: 'graficaUsuarios',
             type: 'pie',
             data: {
-                labels: [<?php foreach($misPaises as $p) echo ('"'.$p.'",');?>],
+                labels: [<?php foreach($misUsuarios as $p) echo ('"'.$p.'",');?>],
                 datasets: [
                     {
                         backgroundColor : [<?php foreach($misColores as $c) echo ('"'.$c.'",');?>],
@@ -386,6 +391,19 @@
             },
             options: {}
         });
+
+        usuarios.onclick = function (evt) {
+            var activePoints = graficaUsuarios.getElementsAtEvent(evt);
+            var chartData = activePoints[0]['_chart'].config.data;
+            var idx = activePoints[0]['_index'];
+
+            var label = chartData.labels[idx];
+            
+            var res = label.split(" ")[0];
+
+            var url = "/dashboard/tickets/usuario/"+res;
+            window.location.href = url;
+        };
 
         var solicitudes =document.getElementById("solicitudes");
         var graficaSolicitudes = new Chart(solicitudes, {
@@ -412,10 +430,26 @@
                 }
             }
         });
+
+        solicitudes.onclick = function (evt) {
+            var activePoints = graficaSolicitudes.getElementsAtEvent(evt);
+            var chartData = activePoints[0]['_chart'].config.data;
+            var idx = activePoints[0]['_index'];
+
+            var label = chartData.labels[idx];
+
+            if(label=="Sin Resolver")
+                var url = "/dashboard/tickets/Sin_resolver";
+            else if(label=="Completados")
+                var url = "/dashboard/tickets/Completado";
+            else
+                var url = "/dashboard/tickets/all";
+            window.location.href = url;
+        };
         
 
-        var solicitudes =document.getElementById("Inventario");
-        var graficaSolicitudes = new Chart(solicitudes, {
+        var inventario =document.getElementById("Inventario");
+        var graficaInventario = new Chart(inventario, {
             name: 'graficaInventario',
             type: 'pie',
             data: {
@@ -430,6 +464,21 @@
             },
             options: {}
         });
+
+        inventario.onclick = function (evt) {
+            var activePoints = graficaInventario.getElementsAtEvent(evt);
+            var chartData = activePoints[0]['_chart'].config.data;
+            var idx = activePoints[0]['_index'];
+
+            var label = chartData.labels[idx];
+            if(label=="Proximos a vencer")
+                var url = "/dashboard/inventario/proximos";
+            else if(label=="Vigentes")
+                var url = "/dashboard/inventario/otros";
+            else if(label=="Vencidos")
+                var url = "/dashboard/inventario/vencidos";
+            window.location.href = url;
+        };
     </script>
     </body>
 </html>

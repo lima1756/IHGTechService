@@ -5,7 +5,26 @@ class Inventario extends CI_Controller
 {
     public function index($tipo="")
     {
-        $this->load->view("SU/inventario", ["tipo" => $tipo]);
+        if($this->logdata->getType() == "SU")
+        {
+            $this->load->view("SU/inventario", ["tipo" => $tipo]);
+        }
+        else
+        {
+            header("Location: /");
+        }
+    }
+
+    public function user($id)
+    {
+        if($this->logdata->getType() == "SU")
+        {
+            $this->load->view("SU/inventario", ["tipo" => "", "id" => $id]);
+        }
+        else
+        {
+            header("Location: /");
+        }
     }
 
     public function newItem()

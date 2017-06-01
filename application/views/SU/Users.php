@@ -260,17 +260,17 @@
                 </thead>
                 <tbody>
                     <?php foreach($realAllUsers as $u): ?>
-                        <tr>
-                            <?php if($u[1]!= null): ?>
+                        <?php if($u[1]!= null): ?>
+                            <tr>
                                 <td><label class="btn active">
                                     <input type="radio" name="item" value="<?php echo $u[0]->id; ?>" id="<?php echo "radio" . $u[0]->id; ?>" style='display:none;' hidden/><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-dot-circle-o fa-2x"></i>
                                 </label></td>
                                 <td><?php echo $u[0]->nombre . " " . $u[0]->apellido; ?></td>
                                 <td><?php echo $u[0]->email; ?></td>
                                 <td><?php echo $u[0]->trabajo; ?></td>
-                                <td><?php echo $u[1] ?></td>
-                            <?php endif; ?>
-                        </tr>
+                                <td><?php echo $u[1] ?></td>    
+                            </tr>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </tbody>
             </table>
@@ -343,6 +343,8 @@
                 <button class="btn btn-warning" id="SU" name="SU" onclick="return false;">Convertir a SU</button>
                 <button class="btn btn-warning" id="mortal" name="mortal" onclick="return false;">Convertir a usuario</button>
                 <button class="btn btn-danger" id="delete" name="delete" onclick="return false;">Denegar acceso</button>
+                <button class="btn btn-success" id="inventory" name="inventory" onclick="return false;">Ver inventario</button>
+                <button class="btn btn-success" id="tickets" name="tickets" onclick="return false;">Ver tickets</button>
             </div>
 
         </form>
@@ -478,6 +480,16 @@
 
             $("#delete").on("click", function() {
                 formulario.action="/dashboard/Users/deleteAccess"
+                formulario.submit();
+            });
+
+            $("#inventory").on("click", function() {
+                formulario.action="/dashboard/inventario/"+id
+                formulario.submit();
+            });
+
+            $("#tickets").on("click", function() {
+                formulario.action="/dashboard/tickets/usuario/"+id
                 formulario.submit();
             });
 

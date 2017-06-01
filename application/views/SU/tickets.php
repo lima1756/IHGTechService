@@ -14,7 +14,7 @@
     foreach($usuarios->result() as $u){
         $countP++;
     }
-    $mortals = $this->db->query("SELECT users.id, users.email FROM users INNER JOIN mortals ON mortals.id_usuario = users.id");
+    $mortals = $this->db->query("SELECT users.id, users.email FROM users, mortals, superusers WHERE mortals.id_usuario = users.id OR superusers.id_usuario = users.id GROUP BY users.id;");
     $mortals = $mortals->result();
 
     $temasTickets = $this->db->query("SELECT * FROM temas_tickets");
@@ -71,7 +71,7 @@
                 $questions=$questions->result();
             }
             elseif($state == "alto" || $state == "medio" || $state == "bajo"){
-                $pendientes = $this->db->query("SELECT TIME_TO_SEC(TIMEDIFF(NOW(), ticketsu_tiene_estado.fecha_hora)) as secs, ticket_sus.id_ticket, ticket_sus.prioridad, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus
+                $pendientes = $this->db->query("SELECT TIME_TO_SEC(TIMEDIFF(NOW(), tickets.fecha_hora)) as secs, ticket_sus.id_ticket, ticket_sus.prioridad, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus
                                                 INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
@@ -82,7 +82,7 @@
                 $atrasados = array();
                 foreach($pendientes as $pendiente){
                     if($pendiente->estado!='Diferido' && $pendiente->estado!='Completado' && $pendiente->estado!='Sin Resolver'){
-                        if($pendiente->prioridad=="alto"){
+                        if($pendiente->prioridad=="alto" || $pendiente->prioridad==null){
                             if($pendiente->secs > 86400){
                                 if($state=="alto"){
                                     array_push($atrasados, $pendiente);
@@ -108,6 +108,7 @@
                 $questions = $atrasados;
             }
             elseif($state == "Sin_resolver"){
+                
                 $state = "Sin resolver";
                 $questions = $this->db->query("SELECT ticket_sus.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus
                                                 INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
@@ -116,6 +117,7 @@
                                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
                                                 AND estados.estado = '" . $state . "'
                                                 ");
+                
                 $questions = $questions->result();
             }
             elseif($state == "Nuevo"){
@@ -234,14 +236,27 @@
                 
                 $questions=$questions->result();
             }
+            elseif(isset($id))
+            {
+                $state = "user";
+                $questions = $this->db->query("SELECT ticket_sus.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus 
+                                                INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
+                                                INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
+                                                INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
+                                                WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
+                                                AND tickets.id_mortal = $id
+                                                AND ticket_sus.id_SU = ". $this->logdata->getData("id"));
+                
+                $questions=$questions->result();
+            }
             else{
+                
                 $state = "all";
                 $questions = $this->db->query("SELECT ticket_sus.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
                                                 AND ticket_sus.id_SU = ". $this->logdata->getData("id"));
-                
                 $questions=$questions->result();
             }
 
@@ -371,6 +386,15 @@
                 <h1 class="page-header">Tickets atrasados media prioridad</h1>
             <?php elseif($state=="bajo"): ?>
                 <h1 class="page-header">Tickets atrasados baja prioridad</h1>
+            <?php elseif($state=="user"):?>
+                <?php 
+                    $usuario = $this->db->query("SELECT users.nombre, users.apellido FROM users WHERE users.id = $id")->result();
+                    if(count($usuario)>0):
+                ?>
+                    <h1 class="page-header"><?php echo $usuario[0]->nombre." ".$usuario[0]->apellido;?></h1>
+                <?php else: ?>
+                    <h1 class="page-header">Usuario no encontrado</h1>
+                <?php endif; ?>
             <?php else: ?>
                 <h1 class="page-header">Tickets en <?php echo $state; ?></h1>
             <?php endif; ?>

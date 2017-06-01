@@ -22,6 +22,18 @@ class Tickets extends CI_Controller
         }
     }
 
+    public function usuario($id)
+    {
+        if($this->logdata->getType() == "SU")
+        {
+            $this->load->view('SU/tickets', ["id" => $id, 'state'=>""]);
+        }
+        else
+        {
+            header("Location: /");
+        }
+    }
+
     public function update()
     {
         var_dump($_POST);

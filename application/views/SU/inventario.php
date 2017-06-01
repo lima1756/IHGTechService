@@ -29,6 +29,11 @@
         $items = $this->db->query("SELECT * FROM inventario WHERE fechaFinGarantia<CURDATE()");
         $items = $items->result();
     }
+    else if(isset($id))
+    {
+        $items = $this->db->query("SELECT * FROM inventario INNER JOIN usuario_tiene_inventario ON usuario_tiene_inventario.id_inventario = inventario.id_inventario WHERE usuario_tiene_inventario.id_usuario = $id");
+        $items = $items->result();
+    }
     else
     {
         $items = $this->db->query("SELECT * FROM inventario");
@@ -367,7 +372,7 @@
         });
 
         $("#newItem").on("click", function(){
-            $("#id_inventario").val(json.id_inventario);
+            $("#id_inventario").val("");
                     
             $("#categoria").val("").trigger('change');
             $("#Marca").val("").trigger('change');
@@ -377,8 +382,12 @@
             $("#compra").val("").trigger('change');
             $("#inicio").val("").trigger('change');
             $("#fin").val("").trigger('change');
-
-            idUsers =[];
+            <?php if(isset($id)): ?>
+                idUsers =[<?php echo $id; ?>];
+            <?php else: ?>
+                idUsers =[];
+            <?php endif; ?>
+            
             $('#usuarios').val(idUsers).trigger("change");
             $("#inventarioButton").show();
             $("#bottons").hide();
