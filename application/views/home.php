@@ -237,7 +237,7 @@ header('Access-Control-Allow-Origin: *');
           <form action="/signUp" method="post" role="form" class="contactForm">
               <div class="col-md-6 col-sm-6 col-xs-12 left">
                 <div class="form-group">
-                    <input type="email" class="form-control" name="email" id="email" value="<?php echo set_value('email'); ?>" placeholder="Tu Email" minlength=5/>
+                    <input type="email" class="form-control" name="email" id="email" value="<?php echo set_value('email'); ?>" placeholder="Tu Email" minlength=5 required/>
                     <div class="validation"></div>
                 </div>
                 <div class="form-group">
@@ -245,19 +245,19 @@ header('Access-Control-Allow-Origin: *');
                     <div class="validation"></div>
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-control" name="pass2" id="pass" placeholder="Confirmar contraseña" data-rule="password" minlength=6/>
+                    <input type="password" class="form-control" name="pass2" id="pass" placeholder="Confirmar contraseña" data-rule="password" minlength=6 required/>
                     <div class="validation"></div>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="name" class="form-control form" id="name"  value="<?php echo set_value('name'); ?>" placeholder="Tu nombre" minlength=2  />
+                    <input type="text" name="name" class="form-control form" id="name"  value="<?php echo set_value('name'); ?>" placeholder="Tu nombre" minlength=2  required />
                     <div class="validation"></div>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="last" class="form-control form" id="last" value="<?php echo set_value('last'); ?>" placeholder="Tu apellido" minlength=2 />
+                    <input type="text" name="last" class="form-control form" id="last" value="<?php echo set_value('last'); ?>" placeholder="Tu apellido" minlength=2  required/>
                     <div class="validation"></div>
                 </div>
                 <div class="form-group">
-                    <input type="number" name="cell" class="form-control form" id="cell" value="<?php echo set_value('cell'); ?>" placeholder="Tu celular" min=10000  />
+                    <input type="number" name="cell" class="form-control form" id="cell" value="<?php echo set_value('cell'); ?>" placeholder="Tu celular" min=10000   required/>
                     <div class="validation"></div>
                 </div>
                 
@@ -265,25 +265,25 @@ header('Access-Control-Allow-Origin: *');
               
               <div class="col-md-6 col-sm-6 col-xs-12 right">
                 <div class="form-group">
-                    <input type="number" name="tel" class="form-control form" id="tel" value="<?php echo set_value('tel'); ?>" placeholder="Tu telefono" minlength=10000  />
+                    <input type="number" name="tel" class="form-control form" id="tel" value="<?php echo set_value('tel'); ?>" placeholder="Tu telefono" minlength=10000   required/>
                     <div class="validation"></div>
                 </div>
                 <div class="form-group">
-                    <input type="number" name="ext" class="form-control form" id="ext" value="<?php echo set_value('ext'); ?>" placeholder="Tu extensión" minlength=1 />
+                    <input type="number" name="ext" class="form-control form" id="ext" value="<?php echo set_value('ext'); ?>" placeholder="Tu extensión" minlength=1  required/>
                     <div class="validation"></div>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="area" class="form-control form" id="area" value="<?php echo set_value('area'); ?>" placeholder="Tu area de trabajo" minlength=2 />
+                    <input type="text" name="area" class="form-control form" id="area" value="<?php echo set_value('area'); ?>" placeholder="Tu area de trabajo" minlength=2  required/>
                     <div class="validation"></div>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="work" class="form-control form" id="work" value="<?php echo set_value('work'); ?>" placeholder="Tu trabajo" minlength=2 />
+                    <input type="text" name="work" class="form-control form" id="work" value="<?php echo set_value('work'); ?>" placeholder="Tu trabajo" minlength=2  required/>
                     <div class="validation"></div>
                 </div>
                 
                 <div class="form-group">
-                    <select class="form-control" name="country" id="country" value="<?php echo set_value('country'); ?>">
-                            <option value="null">Seleccione su país</option>
+                    <select class="form-control" name="country" id="country" value="<?php echo set_value('country'); ?>" required>
+                            <option value="null">Seleccione su estado</option>
                         <?php foreach ($items->result() as $item): ?>
                             <option value='<?php echo $item->id ?>'><?php echo $item->name ?></option>
                         <?php endforeach; ?>

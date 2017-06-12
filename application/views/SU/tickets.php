@@ -62,7 +62,7 @@
 
         <?php
             if($state == "all"){
-                $questions = $this->db->query("SELECT ticket_sus.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
+                $questions = $this->db->query("SELECT ticket_sus.id_ticket, ticket_sus.id_ticketSU, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
@@ -71,7 +71,7 @@
                 $questions=$questions->result();
             }
             elseif($state == "alto" || $state == "medio" || $state == "bajo"){
-                $pendientes = $this->db->query("SELECT TIME_TO_SEC(TIMEDIFF(NOW(), tickets.fecha_hora)) as secs, ticket_sus.id_ticket, ticket_sus.prioridad, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus
+                $pendientes = $this->db->query("SELECT TIME_TO_SEC(TIMEDIFF(NOW(), tickets.fecha_hora)) as secs, ticket_sus.id_ticket, ticket_sus.id_ticketSU, ticket_sus.prioridad, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus
                                                 INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
@@ -110,7 +110,7 @@
             elseif($state == "Sin_resolver"){
                 
                 $state = "Sin resolver";
-                $questions = $this->db->query("SELECT ticket_sus.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus
+                $questions = $this->db->query("SELECT ticket_sus.id_ticket, ticket_sus.id_ticketSU, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus
                                                 INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
@@ -121,7 +121,7 @@
                 $questions = $questions->result();
             }
             elseif($state == "Nuevo"){
-                $questions = $this->db->query("SELECT ticket_sus.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus
+                $questions = $this->db->query("SELECT ticket_sus.id_ticket, ticket_sus.id_ticketSU, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus
                                                 INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
@@ -131,7 +131,7 @@
                 $questions = $questions->result();
             }
             elseif($state == "Diferido"){
-                $questions = $this->db->query("SELECT ticket_sus.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus
+                $questions = $this->db->query("SELECT ticket_sus.id_ticket, ticket_sus.id_ticketSU, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus
                                                 INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
@@ -141,7 +141,7 @@
                 $questions = $questions->result();
             }
             elseif($state == "Espera"){
-                $questions = $this->db->query("SELECT ticket_sus.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus
+                $questions = $this->db->query("SELECT ticket_sus.id_ticket, ticket_sus.id_ticketSU, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus
                                                 INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
@@ -151,7 +151,7 @@
                 $questions = $questions->result();
             }
             elseif($state == "Completado"){
-                $questions = $this->db->query("SELECT ticket_sus.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus
+                $questions = $this->db->query("SELECT ticket_sus.id_ticket, ticket_sus.id_ticketSU, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus
                                                 INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
@@ -228,7 +228,7 @@
                 
                     </script>");
                     $state = "all";
-                $questions = $this->db->query("SELECT ticket_sus.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
+                $questions = $this->db->query("SELECT ticket_sus.id_ticket, ticket_sus.id_ticketSU, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
@@ -239,7 +239,7 @@
             elseif(isset($id))
             {
                 $state = "user";
-                $questions = $this->db->query("SELECT ticket_sus.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus 
+                $questions = $this->db->query("SELECT ticket_sus.id_ticket, ticket_sus.id_ticketSU, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus 
                                                 INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
@@ -252,7 +252,7 @@
             else{
                 
                 $state = "all";
-                $questions = $this->db->query("SELECT ticket_sus.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
+                $questions = $this->db->query("SELECT ticket_sus.id_ticket, ticket_sus.id_ticketSU, tickets.pregunta, estados.estado, tickets.fecha_hora FROM ticket_sus INNER JOIN tickets ON ticket_sus.id_ticket = tickets.id_ticket
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
@@ -413,6 +413,7 @@
                 <thead>
                     <tr>
                         <th>Seleccionar</th>
+                        <th>id</th>
                         <th>Fecha-hora</th>
                         <th>Estado</th>
                         <th>Pregunta</th>
@@ -424,7 +425,8 @@
                     <td><label class="btn active">
                         <input type="radio" name="ticket" value="<?php echo $q->id_ticket; ?>" id="<?php echo "radio" . $q->id_ticket; ?>" style='display:none;' hidden/><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-dot-circle-o fa-2x"></i>
                     </label></td>
-                    <td><?php echo $q->fecha_hora ; ?></td>
+                    <td><?php echo $q->id_ticketSU ; ?></td>
+                    <td><?php echo $q->fecha_hora  ; ?></td>
                     <td><?php echo $q->estado ; ?></td>
                     <td><?php echo $q->pregunta ; ?></td>
                     </tr>
@@ -508,6 +510,7 @@
                         <button class="btn btn-success" id="enviarForm">Guardar</button>
                         <a id="llamadas" href=""><button class="btn btn-info" type="button"> Ir a llamadas</button></a>
                         <a id="foro" href=""><button class="btn btn-info" type="button"> Ir a foro</button></a>
+                        <a id="eliminar" href=""><button class="btn btn-danger" type="button"> Eliminar</button></a>
                     </div>
                     
                 </div>
@@ -720,10 +723,11 @@ var json = JSON;
                   },
                   bAutoWidth: false , 
                   aoColumns : [
+                      { sWidth: '5%' },
+                      { sWidth: '5%' },
                       { sWidth: '10%' },
-                      { sWidth: '15%' },
                       { sWidth: '10%' },
-                      { sWidth: '65%' },
+                      { sWidth: '70%' },
 
                   ],
                   "order": [[ 1, "desc" ]]
@@ -806,6 +810,7 @@ var json = JSON;
                     document.getElementById("foro").href="/dashboard/foro/tema/"+json.id_ticketSU;
                     $('#foro').attr("href", "/dashboard/foro/tema/"+json.id_ticketSU);
                     $('#foro').prop("href", "/dashboard/foro/tema/"+json.id_ticketSU);
+                    $('#eliminar').prop("href", "/dashboard/tickets/delete/"+json.id_ticketSU);
                     if(typeof json.user !== "undefined")
                     {
                         document.getElementById("mortalUser").innerHTML = "<div style='padding-left:2em;'><p><b>Nombre: </b>" + json.user.nombre + " " + json.user.apellido + "</p>" + "<p><b>Correo:</b>" + json.user.email + "</p>" + "<p><b>Telefono: </b>" + json.user.tel + "</p>" + "<p><b>Extensión:</b>" + json.user.ext + "</p>" + "<p><b>Celular:</b>" + json.user.cel + "</p>"  + "<p><b>Area de trabajo:</b>" + json.user.areaTrabajo + "</p>"  + "<p><b>Trabajo:</b>" + json.user.trabajo + "</p></div>";

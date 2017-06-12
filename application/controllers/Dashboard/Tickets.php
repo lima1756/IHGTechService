@@ -34,6 +34,17 @@ class Tickets extends CI_Controller
         }
     }
 
+    public function delete($id)
+    {
+        $ticket = $this->db->query("SELECT * FROM ticket_sus where id_ticketSU = $id");
+        $ticket = $ticket->result();
+        $this->db->where('id_ticketSU', $id);
+        $this->db->delete('ticket_sus');
+        $this->db->where('id_ticket', $ticket[0]->id_ticket);
+        $this->db->delete('tickets');
+        header('Location: /dashboard/tickets/');
+    }
+
     public function update()
     {
         var_dump($_POST);

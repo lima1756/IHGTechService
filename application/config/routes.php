@@ -54,6 +54,7 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 $route['dashboard'] = 'dashboard/dashboard';
 $route['dashboard/tickets/update'] = 'dashboard/tickets/update';
+$route['dashboard/tickets/delete/(:num)'] = 'dashboard/tickets/delete/$1';
 $route['dashboard/tickets/(:any)'] = 'dashboard/tickets/index/$1';
 $route['dashboard/tickets/usuario/(:num)'] = 'dashboard/tickets/usuario/$1';
 $route['dashboard/llamadas/(:num)'] = 'dashboard/llamadas/index/$1';
