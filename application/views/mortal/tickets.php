@@ -31,8 +31,9 @@
             color: #7AA3CC;
             }
         </style>
-        <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.13/css/jquery.dataTables.css">
-        <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.13/js/jquery.dataTables.js"></script>
+        <!-- include dataTables -->
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.15/r-2.1.1/datatables.min.css"/>
+        <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.15/r-2.1.1/datatables.min.js"></script>
                 <!-- include summernote css/js-->
         <link href="/dist/summernote.css" rel="stylesheet">
         <script src="/dist/summernote.js"></script>

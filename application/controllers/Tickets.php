@@ -39,7 +39,7 @@ class Tickets extends CI_Controller
         }
         else
         {
-            $idSU = $this->toWho();
+            $idSU = null;
         }
         $message = $_POST['descripcionForm'];
         $dom = new \DomDocument();
@@ -75,21 +75,17 @@ class Tickets extends CI_Controller
         } // <!-
         $message = $dom->saveHTML();
         
+        
+
         $insert = array(
             "id_mortal" => $idMortal,
             "pregunta" => $_POST['preguntaForm'],
-            "descripcion" => $message
+            "descripcion" => $message,
+            "id_SU" => $idSU,
+            "porcentaje" => 0
         );
         $this->db->insert('tickets', $insert);
         $ticketId = $this->db->insert_id();
-
-        $insert = array(
-            "id_SU" => $idSU,
-            "id_ticket" => $ticketId,
-            "porcentaje" => 0
-        );
-        $this->db->insert('ticket_sus', $insert);
-        $ticketSUId = $this->db->insert_id();
 
         $insert = array(
             "estado" => "Nuevo"
@@ -98,21 +94,20 @@ class Tickets extends CI_Controller
         $estadoId = $this->db->insert_id();
 
         $insert = array(
-            "id_ticketSU" => $ticketSUId,
+            "id_ticketSU" => $ticketId,
             "id_estado" => $estadoId
         );
         $this->db->insert('ticketsu_tiene_estado', $insert);
         
-        if(is_numeric($_POST['SubTemaNuevo']))
+        if(isset($_POST['subTemaNuevo']) && is_numeric($_POST['SubTemaNuevo']))
         {
-            
             $insert = array(
-                "id_ticketSU" => $ticketSUId,
+                "id_ticketSU" => $ticketId,
                 "idTema" => $_POST['SubTemaNuevo']
             );
             $this->db->insert('ticket_tiene_tema', $insert);
         }
-        else
+        else if(isset($_POST['subTemaNuevo']))
         {
             $insert = array(
                 "nombre" => $_POST['SubTemaNuevo'],
@@ -123,7 +118,7 @@ class Tickets extends CI_Controller
             $temaId = $this->db->insert_id();
 
             $insert = array(
-                "id_ticketSU" => $ticketSUId,
+                "id_ticketSU" => $ticketId,
                 "idTema" => $temaId
             );
             $this->db->insert('ticket_tiene_tema', $insert);
@@ -175,44 +170,5 @@ class Tickets extends CI_Controller
         header('Location: /dashboard/tickets/'. $ticketId);
     }
 
-    private function toWho()
-    {
-        $SUs = $this->db->query("SELECT id_usuario FROM superusers");
-        $SUs = $SUs->result();
-        $points = array();
-        foreach($SUs as $SU){
-            $points[$SU->id_usuario]=0;
-            $tasks = $this->db->query("SELECT prioridad, COUNT('prioridad') AS count FROM ticket_sus WHERE id_SU = " . $SU->id_usuario . " GROUP BY prioridad");
-            $tasks = $tasks->result();
-            foreach($tasks as $task){
-                if($task->prioridad=="bajo"){
-                    $points[$SU->id_usuario]=$points[$SU->id_usuario] + ($task->count * 1);
-                }
-                elseif($task->prioridad=="medio"){
-                    $points[$SU->id_usuario]=$points[$SU->id_usuario] + ($task->count * 2);
-                }
-                elseif($task->prioridad=="alto"){
-                    $points[$SU->id_usuario]=$points[$SU->id_usuario] + ($task->count * 4);
-                }
-                elseif($task->prioridad == NULL){                   
-                    $points[$SU->id_usuario]=$points[$SU->id_usuario] + ($task->count * 4);
-                }
-            }
-        }
-        $min=99999999;
-        foreach($points as $point){
-            if($point<$min){
-                $min=$point;
-            }
-        }
-        
-        $myKey=0;
-        foreach($points as $key => $point)
-        {
-            if($point==$min){
-                $myKey=$key;
-            }
-        }
-        return $myKey;
-    }
+    
 }

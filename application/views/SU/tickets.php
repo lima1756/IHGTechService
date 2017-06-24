@@ -62,7 +62,7 @@
 
         <?php
             if($state == "all"){
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
+                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora, tickets.descripcion, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 INNER JOIN users ON tickets.id_mortal = users.id
@@ -72,9 +72,10 @@
                 $questions=$questions->result();
             }
             elseif($state == "alto" || $state == "medio" || $state == "bajo"){
-                $pendientes = $this->db->query("SELECT TIME_TO_SEC(TIMEDIFF(NOW(), tickets.fecha_hora)) as secs, tickets.id_ticket, tickets.prioridad, tickets.pregunta, estados.estado, tickets.fecha_hora FROM tickets
+                $pendientes = $this->db->query("SELECT TIME_TO_SEC(TIMEDIFF(NOW(), tickets.fecha_hora)) as secs, tickets.id_ticket, tickets.pregunta, tickets.descripcion, estados.estado, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo, tickets.prioridad FROM tickets
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
+                                                INNER JOIN users ON tickets.id_mortal = users.id
                                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
                                                 ");
                 
@@ -110,7 +111,7 @@
             elseif($state == "Sin_resolver"){
                 
                 $state = "Sin resolver";
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
+                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 INNER JOIN users ON tickets.id_mortal = users.id
@@ -121,7 +122,7 @@
                 $questions = $questions->result();
             }
             elseif($state == "Nuevo"){
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
+                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 INNER JOIN users ON tickets.id_mortal = users.id
@@ -131,7 +132,7 @@
                 $questions = $questions->result();
             }
             elseif($state == "Diferido"){
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
+                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 INNER JOIN users ON tickets.id_mortal = users.id
@@ -141,7 +142,7 @@
                 $questions = $questions->result();
             }
             elseif($state == "Espera"){
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
+                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 INNER JOIN users ON tickets.id_mortal = users.id
@@ -151,7 +152,7 @@
                 $questions = $questions->result();
             }
             elseif($state == "Completado"){
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
+                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 INNER JOIN users ON tickets.id_mortal = users.id
@@ -189,6 +190,11 @@
                                 $('#state').val(json.id_estado);
                                 $('#foro').attr(\"href\", \"/dashboard/foro/tema/\"+json.id_ticket)
                                 $('#llamadas').attr(\"href\", \"/dashboard/llamadas/\"+json.id_ticket)
+                                if(typeof json.user !== \"undefined\")
+                                {
+                                    document.getElementById(\"mortalUser\").innerHTML = \"<div style='padding-left:2em;'><p><b>Nombre: </b>\" + json.user.nombre + \" \" + json.user.apellido + \"</p>\" + \"<p><b>Correo:</b>\" + json.user.email + \"</p>\" + \"<p><b>Telefono: </b>\" + json.user.tel + \"</p>\" + \"<p><b>Extensión:</b>\" + json.user.ext + \"</p>\" + \"<p><b>Celular:</b>\" + json.user.cel + \"</p>\"  + \"<p><b>Area de trabajo:</b>\" + json.user.areaTrabajo + \"</p>\"  + \"<p><b>Trabajo:</b>\" + json.user.trabajo + \"</p></div>\";
+                                    correo = json.user.email;
+                                }
                                 if (typeof json.estados !== 'undefined')
                                 {
                                     var estados = document.getElementById(\"estadosAnteriores\");
@@ -222,13 +228,18 @@
                                     var adjuntosDesc = document.getElementById(\"adjuntosDesc\");
                                     adjuntosDesc.innerHTML = \"\"
                                 }
+                                if(typeof json.subtema !== \"undefined\")
+                                {
+                                    $(\"#TemaTicket\").val(json.tema.id).change();
+                                    $(\"#SubTema\").val(json.subtema.id);
+                                }
                             });
                         }
 
                 
                     </script>");
                     $state = "all";
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
+                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 INNER JOIN users ON tickets.id_mortal = users.id
@@ -240,7 +251,7 @@
             elseif(isset($id))
             {
                 $state = "user";
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
+                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 INNER JOIN users ON tickets.id_mortal = users.id
@@ -252,7 +263,7 @@
             else{
                 
                 $state = "all";
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
+                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
                                                 INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
                                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
                                                 INNER JOIN users ON tickets.id_mortal = users.id
@@ -264,12 +275,12 @@
         ?>
         <script src="/js/dashboard/jquery.min.js"></script>
         <script src="/js/dashboard/bootstrap.min.js"></script>
-        <script src="/js/dashboard/metisMenu.min.js"></script>
         <script src="/js/dashboard/raphael.min.js"></script>
         <script src="/js/dashboard/morris.min.js"></script>
         <script src="/js/dashboard/sb-admin-2.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+
         <!-- include summernote css/js-->
         <link href="/dist/summernote.css" rel="stylesheet">
         <script src="/dist/summernote.js"></script>
@@ -278,8 +289,9 @@
         <script src="/dist/lang/summernote-es-ES.js"></script>
 
         <!-- include dataTables -->
-        <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.13/css/jquery.dataTables.css">
-        <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.13/js/jquery.dataTables.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.15/r-2.1.1/datatables.min.css"/>
+        <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.15/r-2.1.1/datatables.min.js"></script>
+
 
         <!-- select2 -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
@@ -408,9 +420,9 @@
     </div>
         <!-- /.row -->
 <br>
-    <div class="row">
+    <div class="row" width="100%">
         <div class="col-lg-12">
-           <table id="tickets" class="display cell-border stripe">
+           <table id="tickets" class="display cell-border stripe dt-responsive nowrap">
                 <thead>
                     <tr>
                         <th>Seleccionar</th>
@@ -418,13 +430,14 @@
                         <th>Fecha-hora</th>
                         <th>Estado</th>
                         <th>Pregunta</th>
+                        <th>Descripción</th>
                         <th>Usuario</th>
                         <th>Correo</th>
                         <th>Telefono</th>
                         <th>Extensión</th>
                         <th>Celular</th>
                         <th>Área de trabajo</th>
-                        <th>Área de trabajo</th>
+                        <th>Trabajo</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -437,6 +450,7 @@
                     <td><?php echo $q->fecha_hora  ; ?></td>
                     <td><?php echo $q->estado ; ?></td>
                     <td><?php echo $q->pregunta ; ?></td>
+                    <td><?php echo $q->descripcion ; ?></td>
                     <td><?php echo $q->nombre . " " . $q->apellido ; ?></td>
                     <td><?php echo $q->email ; ?></td>
                     <td><?php echo $q->tel ; ?></td>
@@ -736,8 +750,9 @@ var json = JSON;
                           "previous":   "Anterior"
                       }
                   },
-                  bAutoWidth: false ,
-                  "order": [[ 2, "desc" ]]
+                  bAutoWidth: true ,
+                  "order": [[ 2, "desc" ]],
+                  responsive: true
                 });
 
              $('#detalles').summernote({

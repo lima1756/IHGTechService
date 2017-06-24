@@ -1,4 +1,4 @@
-<?php //http://isotope.metafizzy.co/layout-modes/masonry.html
+<?php 
     $usuarios = $this->db->query("SELECT * FROM (
                                     SELECT supers.* FROM (
                                         SELECT users.* FROM `users` 
@@ -397,7 +397,7 @@
             window.location.href = url;
         };
 
-        var solicitudes =document.getElementById("solicitudes");
+        var solicitudes = document.getElementById("solicitudes");
         var graficaSolicitudes = new Chart(solicitudes, {
             name: 'graficaSolicitudes',
             type: 'bar',

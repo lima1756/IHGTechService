@@ -36,11 +36,7 @@ class Tickets extends CI_Controller
 
     public function delete($id)
     {
-        $ticket = $this->db->query("SELECT * FROM ticket_sus where id_ticketSU = $id");
-        $ticket = $ticket->result();
-        $this->db->where('id_ticketSU', $id);
-        $this->db->delete('ticket_sus');
-        $this->db->where('id_ticket', $ticket[0]->id_ticket);
+        $this->db->where('id_ticket', $id);
         $this->db->delete('tickets');
         header('Location: /dashboard/tickets/');
     }
@@ -54,8 +50,8 @@ class Tickets extends CI_Controller
                 "porcentaje" => $_POST['porcentaje'],
                 "prioridad" => $_POST['prioridad']
             );
-            $this->db->where('id_ticketSU', $_POST['ticket_su']);
-            $this->db->update('ticket_sus', $update);
+            $this->db->where('id_ticket', $_POST['ticket_su']);
+            $this->db->update('tickets', $update);
         }
         $message = $_POST['detalles'];
         if($message != "")

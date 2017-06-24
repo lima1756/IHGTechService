@@ -83,35 +83,40 @@
                 <div class='row'>
                     <div class="col-sm-9" id="contenido">
                         <!--TODO -->
-                        <?php foreach($entradas as $d): ?>
-                            <div class="panel panel-warning">
-                                <div class="panel-heading"><h3><?php echo $d->titulo; ?></h3></div>
-                                <div class="panel-body">
-                                    <?php echo csubstr($d->contenido, 0, 500); ?>...
-                                    <p style="text-align:right;"><b><a href="/knowledge/entrada/<?php echo $d->id;?>">Leer mas</a></b></p>
+                        <?php if(count($entradas)>0): ?>
+                            <?php foreach($entradas as $d): ?>
+                                <div class="panel panel-warning">
+                                    <div class="panel-heading"><h3><?php echo $d->titulo; ?></h3></div>
+                                    <div class="panel-body">
+                                        <?php echo csubstr($d->contenido, 0, 500); ?>...
+                                        <p style="text-align:right;"><b><a href="/knowledge/entrada/<?php echo $d->id;?>">Leer mas</a></b></p>
+                                    </div>
+                                    <div class="panel-footer">
+                                        <span style="float: left;"><b>Publicado:</b> <?php echo date("d-m-Y", strtotime($d->fecha_hora)); ?> </span>
+                                        <span style="float: right;"><b>Tema:</b> <?php echo $d->tema; ?></span>
+                                        <br>
+                                    </div>
                                 </div>
-                                <div class="panel-footer">
-                                    <span style="float: left;"><b>Publicado:</b> <?php echo date("d-m-Y", strtotime($d->fecha_hora)); ?> </span>
-                                    <span style="float: right;"><b>Tema:</b> <?php echo $d->tema; ?></span>
-                                    <br>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                        <?php echo $this->pagination->create_links();?>
+                            <?php endforeach; ?>
+                            <?php echo $this->pagination->create_links();?>
+                        <?php else: ?>
+                            <h1>No se encontró ningún resultado</h1>
+                            <a href="/knowledge"><h3 style="color:orange;">Regresar</h3></a>
+                        <?php endif; ?>
                         <!--TODO -->
                     </div>
                     <div class="col-sm-3" id="lateral">
                         <h4>Buscar por palabra:</h4>
                         <form method="POST" action="/knowledge/search" id="formPalabra">
                             <div class="btn-group" role="group">
-                                <input type="text" name="search" id="search" class="btn" placeholder="Buscar" style="width:75%; border-color:orange;"/>
+                                <input type="text" name="search" id="search" class="btn" placeholder="Buscar" style="width:75%; border-color:black;"/>
                                 <a class="btn btn-default" href="#" style="border-color:orange;" id="searchWord"><i class="fa fa-search" aria-hidden="true"></i></a>
                             </div>
                         </form>
                         <h4>Buscar por tema:</h4>
                         <form method="POST" action="/knowledge/tema" id="formTema">
                             <div class="btn-group" role="group">
-                                <select name="tema" class="btn" id="tema" style="border-color:orange;">
+                                <select name="tema" class="btn" id="tema" style="border-color:black;">
                                     <?php foreach($temas as $t): ?>
                                         <option value="<?php echo $t->tema; ?>"><?php echo $t->tema; ?></option>
                                     <?php endforeach;?>
@@ -153,6 +158,13 @@
                 var form = document.getElementById("formPalabra");
                 form.action = "/knowledge/search/" + $('#search').val();
                 form.submit();
+            });
+
+            $('#formPalabra').submit(function() {
+                var form = document.getElementById("formPalabra");
+                form.action = "/knowledge/search/" + $('#search').val();
+                form.submit();
+                return true; 
             });
 
             document.getElementById("searchTheme").addEventListener("click", function () {
