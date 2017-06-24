@@ -25,7 +25,7 @@
     }
     if(count($foro)==0)
     {
-        $mine = $this->db->query("SELECT id_SU FROM ticket_sus WHERE id_ticketSU = " . $id);
+        $mine = $this->db->query("SELECT id_SU FROM tickets WHERE id_ticket = " . $id);
         $mine = $mine->result();
             $new = true;
     }

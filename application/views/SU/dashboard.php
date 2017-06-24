@@ -47,15 +47,13 @@
 
     
     $estados = $this->db->query("SELECT count(estados.estado) AS conteo, estados.estado FROM estados INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_estado = estados.id_estado   
-                                INNER JOIN ticket_sus ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU
+                                INNER JOIN tickets ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
                                  GROUP BY estados.estado");
     $estados = $estados->result();                            
     $total = 0;
     foreach($estados as $p):
-        if($p->estado == "Completado" || $p->estado == "Sin resolver"):
-            $total+=$p->conteo;
-        endif;
+        $total+=$p->conteo;
     endforeach;
     $conteos = array();   
     foreach($estados as $p)
@@ -256,12 +254,11 @@
                     <i class="fa fa-file-text-o fa-fw"></i> Atrasados
                 </div>
                 <?php 
-                    $pendientes = $this->db->query("SELECT TIME_TO_SEC(TIMEDIFF(NOW(), tickets.fecha_hora)) as secs , prioridad, estado FROM ticket_sus 
-                                INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = ticket_sus.id_ticketSU   
+                    $pendientes = $this->db->query("SELECT TIME_TO_SEC(TIMEDIFF(NOW(), tickets.fecha_hora)) as secs , prioridad, estado FROM tickets 
+                                INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket   
                                 INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
-                                INNER JOIN tickets ON tickets.id_ticket = ticket_sus.id_ticket
                                 WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
-                                AND id_SU = ". $this->logdata->getData("id"));
+                                ");
                     $pendientes = $pendientes->result();
                     $atrasados = array();
                     $atrasados[0]=0;
@@ -337,12 +334,7 @@
 
     </div>
     <script>
-        $('.grid').isotope({
-            itemSelector: '.grid-item',
-            
-         
-
-        });
+        
         var estadoS =document.getElementById("estado-solicitud");
         var estadoSolicitudes = new Chart(estadoS, {
             name: 'estadoSolicitudes',
@@ -479,6 +471,9 @@
                 var url = "/dashboard/inventario/vencidos";
             window.location.href = url;
         };
+        $('.grid').isotope({
+            itemSelector: '.grid-item',
+        });
     </script>
     </body>
 </html>
