@@ -213,7 +213,7 @@
         <!-- /.row -->
 
     <div class="row grid">
-        <div class="col-lg-4 grid-item">
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 grid-item">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-pie-chart fa-fw"></i> Estado de solicitudes
@@ -228,7 +228,7 @@
                 <!-- /.panel-body -->
             </div>
         </div>
-        <div class="col-lg-4 grid-item">
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 grid-item">
             <!-- /.panel -->
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -248,7 +248,7 @@
             
         </div>
         <!-- /.col-lg-8 -->
-        <div class="col-lg-4 grid-item">
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 grid-item">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-file-text-o fa-fw"></i> Atrasados
@@ -293,7 +293,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4 grid-item">
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 grid-item">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-pie-chart fa-fw"></i> Solicitudes por usuarios
@@ -310,7 +310,7 @@
         </div>
         <!-- /.col-lg-4 -->
         
-        <div class="col-lg-4 grid-item">
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 grid-item">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-pie-chart fa-fw"></i> Inventario
@@ -402,13 +402,25 @@
             name: 'graficaSolicitudes',
             type: 'bar',
             data: {
-                labels: ["Completados", "Sin Resolver", "Total"],
+                labels: ["Solicitudes"],
                 datasets: [
                     {
-                        label: "Solicitudes",
-                        backgroundColor : ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(54, 162, 150, 0.5)'],
-                        hoverBackgroundColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(54, 162, 150, 1)'],
-                        data : [<?php echo ($conteos['Completado'] . ", " . $conteos['Sin resolver'] . ", " . $total);?>]
+                        label: "Completados",
+                        backgroundColor : 'rgba(255, 99, 132, 0.5)',
+                        hoverBackgroundColor: 'rgba(255, 99, 132, 1)',
+                        data : [<?php echo ($conteos['Completado']);?>]
+                    },
+                    {
+                        label: "Sin Resolver",
+                        backgroundColor : 'rgba(54, 162, 235, 0.5)',
+                        hoverBackgroundColor: 'rgba(54, 162, 235, 1)',
+                        data : [<?php echo ($conteos['Sin resolver']);?>]
+                    },
+                    {
+                        label: "Total",
+                        backgroundColor : 'rgba(54, 162, 150, 0.5)',
+                        hoverBackgroundColor: 'rgba(54, 162, 150, 1)',
+                        data : [<?php echo($total);?>]
                     }    
                 ]
             },
