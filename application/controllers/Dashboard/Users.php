@@ -20,13 +20,6 @@ class Users extends CI_Controller
         $this->form_validation->set_rules('email', 'e-Mail', 'required');
         $this->form_validation->set_rules('pass', 'Contraseña', 'required');
         $this->form_validation->set_rules('name', 'Nombre', 'required');
-        $this->form_validation->set_rules('last', 'Apellidos', 'required');
-        $this->form_validation->set_rules('cell', 'Celular', 'required');
-        $this->form_validation->set_rules('tel', 'Telefono', 'required');
-        $this->form_validation->set_rules('ext', 'Extensión', 'required');
-        $this->form_validation->set_rules('work', 'Trabajo', 'required');
-        $this->form_validation->set_rules('area', 'Area', 'required');
-        $this->form_validation->set_rules('country', 'País', 'required');
         $email = $this->input->post('email');
         $pass = $this->input->post('pass');
         $name = $this->input->post('name');
@@ -87,14 +80,6 @@ class Users extends CI_Controller
         $this->load->library('form_validation');
         $error = array();
         $this->form_validation->set_rules('email', 'e-Mail', 'required');
-        $this->form_validation->set_rules('name', 'Nombre', 'required');
-        $this->form_validation->set_rules('last', 'Apellidos', 'required');
-        $this->form_validation->set_rules('cell', 'Celular', 'required');
-        $this->form_validation->set_rules('tel', 'Telefono', 'required');
-        $this->form_validation->set_rules('ext', 'Extensión', 'required');
-        $this->form_validation->set_rules('work', 'Trabajo', 'required');
-        $this->form_validation->set_rules('area', 'Area', 'required');
-        $this->form_validation->set_rules('country', 'País', 'required');
         $email = $this->input->post('email');
         $pass = $this->input->post('pass');
         $name = $this->input->post('name');
@@ -174,6 +159,15 @@ class Users extends CI_Controller
         $this->db->query("DELETE FROM superusers WHERE id_usuario = " . $_POST['id_Usuario']);
         $this->db->query("DELETE FROM informes WHERE id_usuario = " . $_POST['id_Usuario']);
         $this->db->query("INSERT INTO informes VALUES (" . $_POST['id_Usuario']. ")");
+        header("Location: /dashboard/Users");
+    }
+
+    public function remove()
+    {
+        $this->db->query("DELETE FROM informes WHERE id_usuario = " . $_POST['id_Usuario']);
+        $this->db->query("DELETE FROM superusers WHERE id_usuario = " . $_POST['id_Usuario']);
+        $this->db->query("DELETE FROM mortals WHERE id_usuario = " . $_POST['id_Usuario']);
+        $this->db->query("DELETE FROM users WHERE id = " . $_POST['id_Usuario']);
         header("Location: /dashboard/Users");
     }
 

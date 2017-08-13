@@ -285,7 +285,7 @@
             
         
             <div class="form-group">
-                <input type="email" class="form-control" name="email" id="email" value="<?php echo set_value('email'); ?>" placeholder="Tu Email" minlength=5/>
+                <input type="email" class="form-control" name="email" id="email" value="<?php echo set_value('email'); ?>" placeholder="Tu Email" minlength=5 required/>
                 <div class="validation"></div>
             </div>
             <div class="form-group">
@@ -343,8 +343,9 @@
                 <button class="btn btn-warning" id="SU" name="SU" onclick="return false;">Convertir a SU</button>
                 <button class="btn btn-warning" id="mortal" name="mortal" onclick="return false;">Convertir a usuario</button>
                 <button class="btn btn-danger" id="delete" name="delete" onclick="return false;">Denegar acceso</button>
-                <button class="btn btn-success" id="inventory" name="inventory" onclick="return false;">Ver inventario</button>
-                <button class="btn btn-success" id="tickets" name="tickets" onclick="return false;">Ver tickets</button>
+                <button class="btn btn-danger" id="remove" name="remove" onclick="return false;">Eliminar</button>
+                <button class="btn btn-info" id="inventory" name="inventory" onclick="return false;">Ver inventario</button>
+                <button class="btn btn-info" id="tickets" name="tickets" onclick="return false;">Ver tickets</button>
             </div>
 
         </form>
@@ -480,6 +481,11 @@
 
             $("#delete").on("click", function() {
                 formulario.action="/dashboard/Users/deleteAccess"
+                formulario.submit();
+            });
+
+            $("#remove").on("click", function() {
+                formulario.action="/dashboard/Users/remove"
                 formulario.submit();
             });
 
