@@ -102,7 +102,8 @@ class Tickets extends CI_Controller
         );
         $this->db->insert('ticketsu_tiene_estado', $insert);
         
-
+        $checking = count($this->db->query('SELECT * FROM tech_service.ticket_tiene_tema WHERE id_ticketSU = '.$_POST['ticket_su'])->result())>0;
+            
         if(is_numeric($_POST['SubTema']))
         {
             
@@ -110,8 +111,13 @@ class Tickets extends CI_Controller
                 "id_ticketSU" => $_POST['ticket_su'],
                 "idTema" => $_POST['SubTema']
             );
-            $this->db->where('id_ticketSU', $_POST['ticket_su']);
-            $this->db->update('ticket_tiene_tema', $insert);
+            if($checking):
+                $this->db->where('id_ticketSU', $_POST['ticket_su']);
+                $this->db->update('ticket_tiene_tema', $insert);
+            else:
+                $this->db->insert('ticket_tiene_tema', $insert);
+            endif;
+            
         }
         else
         {
@@ -127,8 +133,13 @@ class Tickets extends CI_Controller
                 "id_ticketSU" => $_POST['ticket_su'],
                 "idTema" => $temaId
             );
-            $this->db->where('id_ticketSU', $_POST['ticket_su']);
-            $this->db->update('ticket_tiene_tema', $insert);
+            if($checking):
+                $this->db->where('id_ticketSU', $_POST['ticket_su']);
+                $this->db->update('ticket_tiene_tema', $insert);
+            else:
+                $this->db->insert('ticket_tiene_tema', $insert);
+            endif;
+            
         }
         
         $originalNames=$_FILES['files']['name'];

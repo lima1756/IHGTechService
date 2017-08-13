@@ -89,8 +89,35 @@
 
     $invetarioSin = $this->db->query("SELECT id_inventario FROM inventario WHERE CURDATE() < DATE_SUB(fechaFinGarantia, INTERVAL 1 MONTH)");
     $invetarioSin = sizeof($invetarioSin->result());
-/*
-    */
+
+    $subTemas = $this->db->query('SELECT COUNT(ticket_tiene_tema.idTema) AS cantidad, sub_temas_ticket.nombre FROM tech_service.ticket_tiene_tema 
+        INNER JOIN sub_temas_ticket ON ticket_tiene_tema.idTema = sub_temas_ticket.id
+        GROUP BY ticket_tiene_tema.idTema;')->result();
+    $misColoresSubtemas = array();
+    $misColoresSubtemas2 = array();
+    foreach($subTemas as $c):
+        $uno = rand(1,255);
+        $dos = rand(1,255);
+        $tres = rand(1,255);
+        array_push($misColoresSubtemas, 'rgba('.$uno.', '.$dos.', '.$tres.', 0.5)');
+        array_push($misColoresSubtemas2, 'rgba('.$uno.', '.$dos.', '.$tres.', 1)');
+    endforeach;
+
+    $temas = $this->db->query('SELECT count(sub_temas_ticket.id_tema) cantidad, sub_temas_ticket.id_tema, temas_tickets.nombre FROM tech_service.ticket_tiene_tema 
+        INNER JOIN sub_temas_ticket ON ticket_tiene_tema.idTema = sub_temas_ticket.id
+        INNER JOIN temas_tickets ON temas_tickets.id = sub_temas_ticket.id_tema
+        GROUP BY sub_temas_ticket.id_tema')->result();
+    $misColoresTemas = array();
+    $misColoresTemas2 = array();
+    foreach($temas as $c):
+        $uno = rand(1,255);
+        $dos = rand(1,255);
+        $tres = rand(1,255);
+        array_push($misColoresTemas, 'rgba('.$uno.', '.$dos.', '.$tres.', 0.5)');
+        array_push($misColoresTemas2, 'rgba('.$uno.', '.$dos.', '.$tres.', 1)');
+    endforeach;
+    
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -327,6 +354,40 @@
         </div>
         <!-- /.col-lg-4 -->
 
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 grid-item">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-pie-chart fa-fw"></i> Tickets por Subtemas
+                </div>
+                <div class="panel-body">
+                    <div>
+                        <canvas id="subtemas" width="400" height="400"></canvas>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+            
+        </div>
+        <!-- /.col-lg-4 -->
+
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 grid-item">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-pie-chart fa-fw"></i> Tickets por Temas
+                </div>
+                <div class="panel-body">
+                    <div>
+                        <canvas id="temas" width="400" height="400"></canvas>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+            
+        </div>
+        <!-- /.col-lg-4 -->
+
     </div>
     <!-- /.row -->
         </div>
@@ -485,6 +546,40 @@
         };
         $('.grid').isotope({
             itemSelector: '.grid-item',
+        });
+
+        var subTemas =document.getElementById("subtemas");
+        var graficaSubtemas = new Chart(subTemas, {
+            name: 'graficaSubtemas',
+            type: 'pie',
+            data: {
+                labels: [<?php foreach($subTemas as $s) echo ('"'.$s->nombre.'",');?>],
+                datasets: [
+                    {
+                        backgroundColor : [<?php foreach($misColoresSubtemas as $c) echo ('"'.$c.'",');?>],
+                        hoverBackgroundColor: [<?php foreach($misColoresSubtemas2 as $c2) echo ('"'.$c2.'",');?>],
+                        data : [<?php foreach($subTemas as $s) echo ($s->cantidad.',');?>]
+                    }    
+                ]
+            },
+            options: {}
+        });
+
+        var temas =document.getElementById("temas");
+        var graficaTemas = new Chart(temas, {
+            name: 'temas',
+            type: 'pie',
+            data: {
+                labels: [<?php foreach($temas as $s) echo ('"'.$s->nombre.'",');?>],
+                datasets: [
+                    {
+                        backgroundColor : [<?php foreach($misColoresTemas as $c) echo ('"'.$c.'",');?>],
+                        hoverBackgroundColor: [<?php foreach($misColoresTemas2 as $c2) echo ('"'.$c2.'",');?>],
+                        data : [<?php foreach($temas as $s) echo ($s->cantidad.',');?>]
+                    }    
+                ]
+            },
+            options: {}
         });
     </script>
     </body>

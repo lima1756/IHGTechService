@@ -98,16 +98,16 @@ class Tickets extends CI_Controller
             "id_estado" => $estadoId
         );
         $this->db->insert('ticketsu_tiene_estado', $insert);
-        
-        if(isset($_POST['subTemaNuevo']) && is_numeric($_POST['SubTemaNuevo']))
+        if(isset($_POST['SubTemaNuevo']) && is_numeric($_POST['SubTemaNuevo']))
         {
             $insert = array(
                 "id_ticketSU" => $ticketId,
                 "idTema" => $_POST['SubTemaNuevo']
             );
             $this->db->insert('ticket_tiene_tema', $insert);
+            
         }
-        else if(isset($_POST['subTemaNuevo']))
+        else if(isset($_POST['SubTemaNuevo']))
         {
             $insert = array(
                 "nombre" => $_POST['SubTemaNuevo'],
@@ -122,6 +122,7 @@ class Tickets extends CI_Controller
                 "idTema" => $temaId
             );
             $this->db->insert('ticket_tiene_tema', $insert);
+            
         }
         $originalNames=$_FILES['files']['name'];
         $files = $_FILES;
