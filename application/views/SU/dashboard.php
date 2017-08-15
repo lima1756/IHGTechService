@@ -117,33 +117,19 @@
         array_push($misColoresTemas2, 'rgba('.$uno.', '.$dos.', '.$tres.', 1)');
     endforeach;
     
-    $countries = $this->db->query("SELECT count(countries.id) cantidad, countries.name FROM users 
-        INNER JOIN regions ON users.id_region = regions.id
-        INNER JOIN countries ON regions.country_id = countries.id
-        GROUP BY (countries.id);")->result();
-    $misColoresPaises = array();
-    $misColoresPaises2 = array();
-    foreach($countries as $c):
+    $users = $this->db->query("SELECT count(tickets.id_ticket) cantidad, users.nombre, users.apellido, users.email FROM tickets
+        INNER JOIN users ON tickets.id_mortal = users.id
+        GROUP BY users.id;")->result();
+    $misColoresUsers = array();
+    $misColoresUsers2 = array();
+    foreach($users as $c):
         $uno = rand(1,255);
         $dos = rand(1,255);
         $tres = rand(1,255);
-        array_push($misColoresPaises, 'rgba('.$uno.', '.$dos.', '.$tres.', 0.5)');
-        array_push($misColoresPaises2, 'rgba('.$uno.', '.$dos.', '.$tres.', 1)');
+        array_push($misColoresUsers, 'rgba('.$uno.', '.$dos.', '.$tres.', 0.5)');
+        array_push($misColoresUsers2, 'rgba('.$uno.', '.$dos.', '.$tres.', 1)');
     endforeach;
 
-    $regions = $this->db->query("SELECT count(regions.id) cantidad, regions.name FROM users 
-        INNER JOIN regions ON users.id_region = regions.id
-        WHERE regions.country_id = 144
-        GROUP BY (regions.id);")->result();
-    $misColoresRegiones = array();
-    $misColoresRegiones2 = array();
-    foreach($countries as $c):
-        $uno = rand(1,255);
-        $dos = rand(1,255);
-        $tres = rand(1,255);
-        array_push($misColoresRegiones, 'rgba('.$uno.', '.$dos.', '.$tres.', 0.5)');
-        array_push($misColoresRegiones2, 'rgba('.$uno.', '.$dos.', '.$tres.', 1)');
-    endforeach;
     
 ?>
 <!DOCTYPE html>
@@ -418,11 +404,11 @@
         <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 grid-item">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-pie-chart fa-fw"></i> Usuarios por paises
+                    <i class="fa fa-pie-chart fa-fw"></i> Problemas de usuarios
                 </div>
                 <div class="panel-body">
                     <div>
-                        <canvas id="countries" width="400" height="400"></canvas>
+                        <canvas id="users" width="400" height="400"></canvas>
                     </div>
                 </div>
                 <!-- /.panel-body -->
@@ -432,22 +418,7 @@
         </div>
         <!-- /.col-lg-4 -->
 
-        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 grid-item">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <i class="fa fa-pie-chart fa-fw"></i> Usuarios por región de México
-                </div>
-                <div class="panel-body">
-                    <div>
-                        <canvas id="regions" width="400" height="400"></canvas>
-                    </div>
-                </div>
-                <!-- /.panel-body -->
-            </div>
-            <!-- /.panel -->
-            
-        </div>
-        <!-- /.col-lg-4 -->
+        
 
     </div>
     <!-- /.row -->
@@ -643,34 +614,17 @@
             options: {}
         });
 
-        var countries =document.getElementById("countries");
-        var graficaCountries = new Chart(countries, {
-            name: 'countries',
+        var users =document.getElementById("users");
+        var graficaUsers = new Chart(users, {
+            name: 'users',
             type: 'pie',
             data: {
-                labels: [<?php foreach($countries as $s) echo ('"'.$s->name.'",');?>],
+                labels: [<?php foreach($users as $s) echo ('"'.$s->nombre. ' ' . $s->apellido. ' - ' . $s->email . '",');?>],
                 datasets: [
                     {
-                        backgroundColor : [<?php foreach($misColoresPaises as $c) echo ('"'.$c.'",');?>],
-                        hoverBackgroundColor: [<?php foreach($misColoresPaises2 as $c2) echo ('"'.$c2.'",');?>],
-                        data : [<?php foreach($countries as $s) echo ($s->cantidad.',');?>]
-                    }    
-                ]
-            },
-            options: {}
-        });
-
-        var regions =document.getElementById("regions");
-        var graficaRegions = new Chart(regions, {
-            name: 'regions',
-            type: 'pie',
-            data: {
-                labels: [<?php foreach($regions as $s) echo ('"'.$s->name.'",');?>],
-                datasets: [
-                    {
-                        backgroundColor : [<?php foreach($misColoresRegiones as $c) echo ('"'.$c.'",');?>],
-                        hoverBackgroundColor: [<?php foreach($misColoresRegiones2 as $c2) echo ('"'.$c2.'",');?>],
-                        data : [<?php foreach($regions as $s) echo ($s->cantidad.',');?>]
+                        backgroundColor : [<?php foreach($misColoresUsers as $c) echo ('"'.$c.'",');?>],
+                        hoverBackgroundColor: [<?php foreach($misColoresUsers2 as $c2) echo ('"'.$c2.'",');?>],
+                        data : [<?php foreach($users as $s) echo ($s->cantidad.',');?>]
                     }    
                 ]
             },
