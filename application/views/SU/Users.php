@@ -15,13 +15,14 @@
         $countP++;
     }
     $items = $this->db->query("SELECT * FROM countries")->result();
+    
     $allUsers = $this->db->query("SELECT * FROM users");
     $realAllUsers = array();
     $conteo = 0;
     foreach($allUsers->result() as $u){
         $realAllUsers[$conteo][0] = $u;
-        $comprobacion = $this->db->query("SELECT * FROM mortals where id_usuario = '" . $u->id . "';")->result();
         
+        $comprobacion = $this->db->query("SELECT * FROM mortals where id_usuario = '" . $u->id . "';")->result();
         if(sizeof($comprobacion)==0)
         {
             $comprobacion = $this->db->query("SELECT * FROM superusers where id_usuario = '" . $u->id . "';")->result();
@@ -334,6 +335,11 @@
                 </select>
             </div>
 
+            <div class="form-group">
+                <select class="form-control" name="region" id="region" style="width:100%;" value="<?php echo set_value('region'); ?>" disabled>
+                </select>
+            </div>
+
             <div class="form-group" id="nuevoButton" style="display:none">
                 <button class="btn btn-success" id="SUNew" name="SUNew" onclick="return false;">Guardar como SU</button>
                 <button class="btn btn-warning" id="mortalNew" name="mortalNew" onclick="return false;">Guardar como usuario</button>
@@ -357,7 +363,49 @@
 </div>
 <!--FIN TODO -->
     <script>
-        
+        $("#country").on("change", function()
+        {
+            getRegions();
+        });
+
+        $("#country").on("click", function()
+        {
+            getRegions();
+        });
+
+        function getRegions()
+        {
+            $.ajaxSetup({
+                headers: {
+                },
+                async: false,
+            })
+            $.post("/ajax/ajaxRegions", {
+                'countryId': $("#country").val()
+            },
+            function(data, status){
+                var regions = document.getElementById("region");
+                if(data != "")
+                {
+                    regions.innerHTML = "";
+                    var datos = JSON.parse(data);
+                    if(datos[0] !== "undefined")
+                    {
+                        regions.innerHTML = "<option value=NULL>Otro</option>";
+                        $.each(datos, function(i, item){
+                            regions.innerHTML = regions.innerHTML + "<option value='" + datos[i].id + "'>" + datos[i].name + "</option>";
+                        });
+                        regions.disabled = false;
+                    }
+                }
+                else
+                {
+                    regions.disabled = true;
+                }
+                
+            }
+            );
+        }
         $(document).ready( function () {
             $('#usuarios').DataTable( {
                 "language": {
@@ -386,13 +434,20 @@
             
         });
         $("#country").select2({
-                placeholder: {
-                    id: '-1', // the value of the option
-                    text: 'Seleccionar una opción'
-                },
-                allowClear: true,
-                tags: true
-            });
+            placeholder: {
+                id: '-1', // the value of the option
+                text: 'Seleccionar una opción'
+            },
+            allowClear: true,
+            tags: true
+        });
+        $("#region").select2({
+            placeholder: {
+                id: '-1', // the value of the option
+                text: 'Seleccionar una opción'
+            },
+            allowClear: true,
+        });
         $("#btn_newUser").on("click", function(){
             $("#user-Container").show();
             $("#email").val("");
@@ -404,6 +459,7 @@
             $("#area").val("");
             $("#work").val("");
             $("#country").val("").trigger('change');;
+            $("#region").val("").trigger('change');;
             $("#id_Usuario").val("");
             $('html, body').animate({
                 scrollTop: $("#user-Container").offset().top
@@ -442,7 +498,7 @@
                     $("#myButtons").show();
                     json = JSON.parse(data);
                     $("#email").val(json.email);
-                    $("#id_Usuario").val(json.id);
+                    $("#id_Usuario").val(json.user_id);
                     $("#name").val(json.nombre);
                     $("#last").val(json.apellido);
                     $("#cell").val(json.cel);
@@ -450,7 +506,8 @@
                     $("#ext").val(json.ext);
                     $("#area").val(json.areaTrabajo);
                     $("#work").val(json.trabajo);
-                    $("#country").val(json.id_region).trigger('change');
+                    $("#country").val(json.country_id).trigger('change');
+                    $("#region").val(json.id_region).trigger('change');
                 });
             });
             var formulario = document.getElementById("formData");

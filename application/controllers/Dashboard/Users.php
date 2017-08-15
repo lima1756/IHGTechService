@@ -5,10 +5,17 @@ class Users extends CI_Controller
 {
     public function index()
     {
-     //   $this->config->set_item('language', 'spanish');
+        $this->config->set_item('language', 'spanish');
         $this->load->helper(array('form', 'url'));
         $this->load->library('form_validation');
-        $this->load->view('SU/Users');
+        if($this->logdata->getType() == "SU")
+        {
+            $this->load->view('SU/Users');
+        }
+        else
+        {
+            header("Location: /");
+        }
     }
     
     
@@ -30,7 +37,8 @@ class Users extends CI_Controller
         $ext = $this->input->post('ext');
         $work = $this->input->post('work');
         $area = $this->input->post('area');
-        $country = $this->input->post('country');
+        $region = $this->input->post('region');
+        
         if($this->form_validation->run() == FALSE){
             array_push($error, "NULLS");
         }
@@ -55,7 +63,7 @@ class Users extends CI_Controller
                 "ext" => $ext, 
                 "areaTrabajo" => $area, 
                 "trabajo" => $work, 
-                "id_region" => $country
+                "id_region" => $region
             );
             $this->db->insert("users", $insert);
             $IDmortal = $this->db->insert_id();
@@ -64,10 +72,15 @@ class Users extends CI_Controller
                 $insert = array(
                     "id_usuario" => $IDmortal
                 );
-                if($type=="mortal")
+                
+                if($type=="mortals")
+                {
                     $this->db->insert("mortals", $insert);
+                }
                 else
+                {
                     $this->db->insert("superusers", $insert);
+                }
             }
         }
         $this->load->view('SU/Users', ['error' => $error, 'goTo' => "registro"]);
@@ -90,7 +103,7 @@ class Users extends CI_Controller
         $ext = $this->input->post('ext');
         $work = $this->input->post('work');
         $area = $this->input->post('area');
-        $country = $this->input->post('country');
+        $region = $this->input->post('region');
         if($this->form_validation->run() == FALSE){
             array_push($error, "NULLS");
         }
@@ -111,7 +124,7 @@ class Users extends CI_Controller
                     "ext" => $ext, 
                     "areaTrabajo" => $area, 
                     "trabajo" => $work, 
-                    "id_region" => $country
+                    "id_region" => $region
                 );
             }
             else
@@ -126,7 +139,7 @@ class Users extends CI_Controller
                     "ext" => $ext, 
                     "areaTrabajo" => $area, 
                     "trabajo" => $work, 
-                    "id_region" => $country
+                    "id_region" => $region
                 );
             }
             $this->db->where("id", $_POST['id_Usuario']);

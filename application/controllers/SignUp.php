@@ -18,7 +18,7 @@ class SignUp extends CI_Controller
         $this->form_validation->set_rules('ext', 'Extensión', 'required');
         $this->form_validation->set_rules('work', 'Trabajo', 'required');
         $this->form_validation->set_rules('area', 'Area', 'required');
-        $this->form_validation->set_rules('country', 'País', 'required');
+        $this->form_validation->set_rules('region', 'Región', 'required');
         $email = $this->input->post('email');
         $pass = $this->input->post('pass');
         $name = $this->input->post('name');
@@ -29,7 +29,7 @@ class SignUp extends CI_Controller
         $ext = $this->input->post('ext');
         $work = $this->input->post('work');
         $area = $this->input->post('area');
-        $country = $this->input->post('country');
+        $region = $this->input->post('region');
         if($this->form_validation->run() == FALSE){
             array_push($error, "NULLS");
         }
@@ -54,7 +54,7 @@ class SignUp extends CI_Controller
                 "ext" => $ext, 
                 "areaTrabajo" => $area, 
                 "trabajo" => $work, 
-                "id_region" => $country
+                "id_region" => $region
             );
             $this->db->insert("users", $insert);
             $IDmortal = $this->db->insert_id();

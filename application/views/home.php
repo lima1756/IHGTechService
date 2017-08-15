@@ -41,6 +41,9 @@ header('Access-Control-Allow-Origin: *');
               </script>
             <?php endif; ?>
           <?php endif; ?>
+        <!-- select2 -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     </head>
     <body>
       <!--Navigation bar-->
@@ -280,13 +283,19 @@ header('Access-Control-Allow-Origin: *');
                     <input type="text" name="work" class="form-control form" id="work" value="<?php echo set_value('work'); ?>" placeholder="Tu trabajo" minlength=2  required/>
                     <div class="validation"></div>
                 </div>
+
+                
                 
                 <div class="form-group">
-                    <select class="form-control" name="country" id="country" value="<?php echo set_value('country'); ?>" required>
-                            <option value="null">Seleccione su estado</option>
+                    <select class="form-control" name="country" id="country" style="width:100%;"value="<?php echo set_value('country'); ?>">
                         <?php foreach ($items->result() as $item): ?>
                             <option value='<?php echo $item->id ?>'><?php echo $item->name ?></option>
                         <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <select class="form-control" name="region" id="region" style="width:100%;" value="<?php echo set_value('region'); ?>" disabled>
                     </select>
                 </div>
               </div>
@@ -320,6 +329,65 @@ header('Access-Control-Allow-Origin: *');
       </div>
     </footer>
     <!--/ Footer-->
-        
+     <script>
+        $("#country").on("change", function()
+        {
+            getRegions();
+        });
+
+        $("#country").on("click", function()
+        {
+            getRegions();
+        });
+
+        function getRegions()
+        {
+            $.ajaxSetup({
+                headers: {
+                },
+                async: false,
+            })
+            $.post("/ajax/ajaxRegions", {
+                'countryId': $("#country").val()
+            },
+            function(data, status){
+                var regions = document.getElementById("region");
+                if(data != "")
+                {
+                    regions.innerHTML = "";
+                    var datos = JSON.parse(data);
+                    if(datos[0] !== "undefined")
+                    {
+                        regions.innerHTML = "<option value=NULL>Otro</option>";
+                        $.each(datos, function(i, item){
+                            regions.innerHTML = regions.innerHTML + "<option value='" + datos[i].id + "'>" + datos[i].name + "</option>";
+                        });
+                        regions.disabled = false;
+                    }
+                }
+                else
+                {
+                    regions.disabled = true;
+                }
+                
+            }
+            );
+        }
+        $("#country").select2({
+            placeholder: {
+                id: '-1', // the value of the option
+                text: 'Seleccionar una opción'
+            },
+            allowClear: true,
+            tags: true
+        });
+        $("#region").select2({
+            placeholder: {
+                id: '-1', // the value of the option
+                text: 'Seleccionar una opción'
+            },
+            allowClear: true,
+        });
+     </script>   
     </body>
 </html>
