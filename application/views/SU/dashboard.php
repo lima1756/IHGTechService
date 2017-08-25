@@ -130,6 +130,39 @@
         array_push($misColoresUsers2, 'rgba('.$uno.', '.$dos.', '.$tres.', 1)');
     endforeach;
 
+    $problemsByWeek = $this->db->query("SELECT count(idTema) cantidad, tech_service.sub_temas_ticket.nombre FROM tech_service.ticket_tiene_tema
+        INNER JOIN tech_service.sub_temas_ticket
+            ON tech_service.ticket_tiene_tema.idTema = tech_service.sub_temas_ticket.id
+        INNER JOIN tech_service.tickets
+            ON tickets.id_ticket = ticket_tiene_tema.id_ticketSU
+        WHERE week(tickets.fecha_hora) = week(CURDATE())
+        group by idTema")->result();
+    $misColoresWeeks = array();
+    $misColoresWeeks2 = array();
+    foreach($problemsByWeek as $c):
+        $uno = rand(1,255);
+        $dos = rand(1,255);
+        $tres = rand(1,255);
+        array_push($misColoresWeeks, 'rgba('.$uno.', '.$dos.', '.$tres.', 0.5)');
+        array_push($misColoresWeeks2, 'rgba('.$uno.', '.$dos.', '.$tres.', 1)');
+    endforeach;
+
+    $problemsByMonth = $this->db->query("SELECT count(idTema) cantidad, tech_service.sub_temas_ticket.nombre FROM tech_service.ticket_tiene_tema
+        INNER JOIN tech_service.sub_temas_ticket
+            ON tech_service.ticket_tiene_tema.idTema = tech_service.sub_temas_ticket.id
+        INNER JOIN tech_service.tickets
+            ON tickets.id_ticket = ticket_tiene_tema.id_ticketSU
+        WHERE month(tickets.fecha_hora) = month(CURDATE())
+        group by idTema")->result();
+    $misColoresMonth = array();
+    $misColoresMonth2 = array();
+    foreach($problemsByMonth as $c):
+        $uno = rand(1,255);
+        $dos = rand(1,255);
+        $tres = rand(1,255);
+        array_push($misColoresMonth, 'rgba('.$uno.', '.$dos.', '.$tres.', 0.5)');
+        array_push($misColoresMonth2, 'rgba('.$uno.', '.$dos.', '.$tres.', 1)');
+    endforeach;
     
 ?>
 <!DOCTYPE html>
@@ -417,7 +450,40 @@
             
         </div>
         <!-- /.col-lg-4 -->
+        
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 grid-item">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-pie-chart fa-fw"></i> Problemas por tema de la semana actual
+                </div>
+                <div class="panel-body">
+                    <div>
+                        <canvas id="week" width="400" height="400"></canvas>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+            
+        </div>
+        <!-- /.col-lg-4 -->
 
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 grid-item">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-pie-chart fa-fw"></i> Problemas por tema del mes actual
+                </div>
+                <div class="panel-body">
+                    <div>
+                        <canvas id="month" width="400" height="400"></canvas>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+            
+        </div>
+        <!-- /.col-lg-4 -->
         
 
     </div>
@@ -625,6 +691,40 @@
                         backgroundColor : [<?php foreach($misColoresUsers as $c) echo ('"'.$c.'",');?>],
                         hoverBackgroundColor: [<?php foreach($misColoresUsers2 as $c2) echo ('"'.$c2.'",');?>],
                         data : [<?php foreach($users as $s) echo ($s->cantidad.',');?>]
+                    }    
+                ]
+            },
+            options: {}
+        });
+
+        var week =document.getElementById("week");
+        var graficaWeek = new Chart(week, {
+            name: 'week',
+            type: 'pie',
+            data: {
+                labels: [<?php if(count($problemsByWeek)>0): foreach($problemsByWeek as $s) echo ('"'.$s->nombre. '",'); else: echo "\"Sin problemas actualmente\""; endif;?>],
+                datasets: [
+                    {
+                        backgroundColor : [<?php foreach($misColoresWeeks as $c) echo ('"'.$c.'",');?>],
+                        hoverBackgroundColor: [<?php foreach($misColoresWeeks2 as $c2) echo ('"'.$c2.'",');?>],
+                        data : [<?php if(count($problemsByWeek)>0): foreach($problemsByWeek as $s) echo ($s->cantidad.','); else: echo "0"; endif;?>]
+                    }    
+                ]
+            },
+            options: {}
+        });
+
+        var month =document.getElementById("month");
+        var graficaMonth = new Chart(month, {
+            name: 'month',
+            type: 'pie',
+            data: {
+                labels: [<?php if(count($problemsByMonth)>0): foreach($problemsByMonth as $s) echo ('"'.$s->nombre. '",'); else: echo "\"Sin problemas actualmente\""; endif;?>],
+                datasets: [
+                    {
+                        backgroundColor : [<?php foreach($misColoresMonth as $c) echo ('"'.$c.'",');?>],
+                        hoverBackgroundColor: [<?php foreach($misColoresMonth2 as $c2) echo ('"'.$c2.'",');?>],
+                        data : [<?php if(count($problemsByMonth)>0): foreach($problemsByMonth as $s) echo ($s->cantidad.','); else: echo "0"; endif;?>]
                     }    
                 ]
             },
