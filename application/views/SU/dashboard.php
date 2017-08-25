@@ -163,7 +163,13 @@
         array_push($misColoresMonth, 'rgba('.$uno.', '.$dos.', '.$tres.', 0.5)');
         array_push($misColoresMonth2, 'rgba('.$uno.', '.$dos.', '.$tres.', 1)');
     endforeach;
-    
+    /*
+        Query para una posible grafica lineal con los problemas que han ido pasando durante el mes por dias
+        SELECT count(date(tickets.fecha_hora)) cantidad, date(tickets.fecha_hora) fecha 
+        FROM tech_service.tickets
+        WHERE month(tickets.fecha_hora) = month(CURDATE())
+        Group by date(tickets.fecha_hora)
+    */
 ?>
 <!DOCTYPE html>
 <html lang="es">
