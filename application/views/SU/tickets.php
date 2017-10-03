@@ -87,6 +87,9 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 
+        <!-- fileSaver -->
+        <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/14082/FileSaver.js"></script>
+        
         <script>
              var parameters = '<?php echo $state!=""?$state:(isset($id)?"usuario":"all"); ?>';
              var users = '<?php echo isset($id)?$id:-1;?>';
@@ -269,7 +272,7 @@
         <div class="col-lg-6" style="padding:5px">
             <div class="btn-group" style="width:100%">
                 <button id="filtrarBtn" class="btn btn-info" style="width:30%">Filtrar</button>
-                <button id="excelBtn" class="btn btn-success" style="width:70%"><i class="fa fa-file-excel-o"></i> Descargar Archivo Excel de tabla actual</button>
+                <button id="excelBtn" class="btn btn-success" style="width:70%"><i class="fa fa-file-excel-o"></i> Descargar Archivo Excel (.csv) de filtro actual</button>
             </div>
         </div>
 
@@ -438,60 +441,20 @@
 
             var correo = "";
             var json = JSON;
-            $("#TemaTicket").on("change", function()
+            // Request the load of SubTema field
+            $("#TemaTicket").on("change click", function()
             {
-                TemaNormal();
+                getSubTemas($("#TemaTicket"), document.getElementById("SubTema"));
             });
 
-            $("#TemaTicket").on("click", function()
+            // Request the load of SubTemaNuevo field
+            $("#TemaTicketNuevo").on("click change", function()
             {
-                TemaNormal();
+                getSubTemas($("#TemaTicketNuevo"), document.getElementById("SubTemaNuevo"));
             });
 
-            function TemaNormal()
-            {
-                $.ajaxSetup({
-                    headers: {
-                    },
-                    async: false,
-                })
-                $.post("/ajax/ajaxTemas", {
-                    'id': $("#TemaTicket").val()
-                },
-                function(data, status){
-                    var subtemas = document.getElementById("SubTema");
-                    subtemas.innerHTML = "<option></option>"
-                    if(data != "")
-                    {
-                        var datos = JSON.parse(data);
-                        if(datos[0].id !== "undefined")
-                        {
-                            $.each(datos, function(i, item){
-                                subtemas.innerHTML = subtemas.innerHTML + "<option value='" + datos[i].id + "'>" + datos[i].nombre + "</option>";
-                            });
-                            subtemas.disabled = false;
-                        }
-                    }
-                    else
-                    {
-                        subtemas.disabled = true;
-                    }
-                    
-                }
-                );
-            }
-
-            $("#TemaTicketNuevo").on("click", function()
-            {
-                nuevoTema($("#TemaTicketNuevo"), document.getElementById("SubTemaNuevo"));
-            });
-
-            $("#TemaTicketNuevo").on("change", function()
-            {
-                nuevoTema($("#TemaTicketNuevo"), document.getElementById("SubTemaNuevo"));
-            });
-
-            function nuevoTema(inputTema, outputSubTemas)
+            // Obtains the value for the specified subtema field
+            function getSubTemas(inputTema, outputSubTemas)
             {
                 $.ajaxSetup({
                     headers: {
@@ -925,8 +888,31 @@
                 }
                 else
                 {
-                    nuevoTema($("#FiltroTema"), document.getElementById("FiltroSubTema"));
+                    getSubTemas($("#FiltroTema"), document.getElementById("FiltroSubTema"));
                 }
+            });
+
+            // Request csv file of filters
+            $("#excelBtn").on("click", function()
+            {
+                $.ajax({
+                    method: "POST",
+                    data: {
+                        estado: $('#FiltroEstado').val(),
+                        usuario: $('#FiltroUsuario').val(),
+                        tema: $('#FiltroTema').val(),
+                        subTema: $('#FiltroSubTema').val(),
+                        end: $('#filterEnd').val(),
+                        start: $('#filterStart').val()
+                    },
+                    url: "/ajax/AjaxTickets/excel"
+                })
+                .done(function( data ) {
+                        var text = data;
+                        var blob = new Blob([text], {type: "text/plain;charset=ANSI"});
+                        saveAs(blob, "rawData"+".csv");
+                    }
+                );
             });
         </script>
     

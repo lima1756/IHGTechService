@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class AjaxTickets extends CI_Controller
 {
-    public function index()
+    public function index($print = true)
     {
         // Basic query, yes, basic ;-;
         $query = "SELECT TIME_TO_SEC(TIMEDIFF(NOW(), tickets.fecha_hora)) as secs, tickets.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora, tickets.descripcion, users.email, concat(concat(users.nombre, ' '), users.apellido) as nombre, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo, tickets.prioridad FROM tickets
@@ -43,7 +43,7 @@ class AjaxTickets extends CI_Controller
         // Run query
         $questions = $this->db->query($query)->result();
 
-        // Filter query if $estado input is 'alta', 'media' or 'baja'
+        // Filter $quesstions if $estado input is 'alta', 'media' or 'baja'
         if(($estado=="alta"  || $estado == "media" || $estado == "baja"))
         {
             $atrasados = array();
@@ -62,10 +62,21 @@ class AjaxTickets extends CI_Controller
             }
             $questions = $atrasados;
         }
-
-        echo json_encode($questions, JSON_OBJECT_AS_ARRAY);
+        if($print)
+            echo json_encode($questions, JSON_OBJECT_AS_ARRAY);
+        else
+            return $questions;
     }
 
+    public function excel()
+    {
+        $data = $this->index(false);
+        echo "ID,Fecha y hora,Estado,Pregunta,Nombre,e-mail,Telefono,Extension,Celular,Area de Trabajo,Trabajo\n";
+        foreach($data as $d)
+        {
+            echo $d->id_ticket . ",\"" . $d->fecha_hora . "\",\"" . $d->estado . "\",\"" . $d->pregunta . "\",\"" . $d->nombre . "\",\"" . $d->email . "\",=\"" . $d->tel . "\",=\"" . $d->ext . "\",=\"" . $d->cel . "\",\"" . $d->areaTrabajo . "\",\"" . $d->trabajo . "\"\n";
+        }
+    }
 
 
 }
