@@ -14,7 +14,7 @@
     foreach($usuarios->result() as $u){
         $countP++;
     }
-    $mortals = $this->db->query("SELECT users.id, users.email FROM users, mortals, superusers WHERE mortals.id_usuario = users.id OR superusers.id_usuario = users.id GROUP BY users.id;");
+    $mortals = $this->db->query("SELECT users.id, users.email, users.nombre, users.apellido FROM users, mortals, superusers WHERE mortals.id_usuario = users.id OR superusers.id_usuario = users.id GROUP BY users.id;");
     $mortals = $mortals->result();
 
     $temasTickets = $this->db->query("SELECT * FROM temas_tickets");
@@ -61,217 +61,7 @@
         </style>
 
         <?php
-            if($state == "all"){
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.fecha_hora, tickets.descripcion, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
-                                                INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
-                                                INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
-                                                INNER JOIN users ON tickets.id_mortal = users.id
-                                                WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
-                                                ");
-                
-                $questions=$questions->result();
-            }
-            elseif($state == "alto" || $state == "medio" || $state == "bajo"){
-                $pendientes = $this->db->query("SELECT TIME_TO_SEC(TIMEDIFF(NOW(), tickets.fecha_hora)) as secs, tickets.id_ticket, tickets.pregunta, tickets.descripcion, estados.estado, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo, tickets.prioridad FROM tickets
-                                                INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
-                                                INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
-                                                INNER JOIN users ON tickets.id_mortal = users.id
-                                                WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
-                                                ");
-                
-                $pendientes = $pendientes->result();
-                $atrasados = array();
-                foreach($pendientes as $pendiente){
-                    if($pendiente->estado!='Diferido' && $pendiente->estado!='Completado' && $pendiente->estado!='Sin Resolver'){
-                        if($pendiente->prioridad=="alto" || $pendiente->prioridad==null){
-                            if($pendiente->secs > 86400){
-                                if($state=="alto"){
-                                    array_push($atrasados, $pendiente);
-                                }
-                            }
-                        }
-                        elseif($pendiente->prioridad=="medio"){
-                            if($pendiente->secs > 172800){
-                                if($state=="medio"){
-                                    array_push($atrasados, $pendiente);
-                                }
-                            }
-                        }
-                        elseif($pendiente->prioridad=="bajo"){
-                            if($pendiente->secs > 259200){
-                                if($state=="bajo"){
-                                    array_push($atrasados, $pendiente);
-                                }
-                            }
-                        }
-                    }
-                }
-                $questions = $atrasados;
-            }
-            elseif($state == "Sin_resolver"){
-                
-                $state = "Sin resolver";
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
-                                                INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
-                                                INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
-                                                INNER JOIN users ON tickets.id_mortal = users.id
-                                                WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
-                                                AND estados.estado = '" . $state . "'
-                                                ");
-                
-                $questions = $questions->result();
-            }
-            elseif($state == "Nuevo"){
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
-                                                INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
-                                                INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
-                                                INNER JOIN users ON tickets.id_mortal = users.id
-                                                WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
-                                                AND estados.estado = '" . $state . "'
-                                                ");
-                $questions = $questions->result();
-            }
-            elseif($state == "Diferido"){
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
-                                                INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
-                                                INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
-                                                INNER JOIN users ON tickets.id_mortal = users.id
-                                                WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
-                                                AND estados.estado = '" . $state . "'
-                                                ");
-                $questions = $questions->result();
-            }
-            elseif($state == "Espera"){
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
-                                                INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
-                                                INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
-                                                INNER JOIN users ON tickets.id_mortal = users.id
-                                                WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
-                                                AND estados.estado = '" . $state . "'
-                                                ");
-                $questions = $questions->result();
-            }
-            elseif($state == "Completado"){
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
-                                                INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
-                                                INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
-                                                INNER JOIN users ON tickets.id_mortal = users.id
-                                                WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
-                                                AND estados.estado = '" . $state . "'
-                                                ");
-                $questions = $questions->result();
-            }
-            elseif(is_numeric($state))
-            {
-                echo("<script>
-                        window.onload = function() {
-                            $('#radio".$state."').prop(\"checked\", true);
-                            $.ajaxSetup({
-                                headers: {
-                                    }
-                                })
-                            $.post(\"/ajax/ajaxticketsu\", {
-                                'ticketid': ".$state."
-                            },
-                            function(data, status){
-                                var json = JSON.parse(data);
-                                var message = json.descripcion.replace(/\\n/g, \"<br />\");
-                                $('#pregunta-container').show();
-                                $('html, body').animate({
-                                    scrollTop: $(\"#pregunta-container\").offset().top
-                                }, 1000);
-                                $('#pregunta').html(json.pregunta);
-                                $('#descripcion').html(message);
-                                $('#estado_actual').val(json.estado);
-                                $('#detalles').val(json.detalles);
-                                $('#porcentaje').val(json.porcentaje);
-                                $('#prioridad').val(json.prioridad);
-                                $('#ticket_su').val(json.id_ticket);
-                                $('#state').val(json.id_estado);
-                                $('#foro').attr(\"href\", \"/dashboard/foro/tema/\"+json.id_ticket)
-                                $('#llamadas').attr(\"href\", \"/dashboard/llamadas/\"+json.id_ticket)
-                                if(typeof json.user !== \"undefined\")
-                                {
-                                    document.getElementById(\"mortalUser\").innerHTML = \"<div style='padding-left:2em;'><p><b>Nombre: </b>\" + json.user.nombre + \" \" + json.user.apellido + \"</p>\" + \"<p><b>Correo:</b>\" + json.user.email + \"</p>\" + \"<p><b>Telefono: </b>\" + json.user.tel + \"</p>\" + \"<p><b>Extensión:</b>\" + json.user.ext + \"</p>\" + \"<p><b>Celular:</b>\" + json.user.cel + \"</p>\"  + \"<p><b>Area de trabajo:</b>\" + json.user.areaTrabajo + \"</p>\"  + \"<p><b>Trabajo:</b>\" + json.user.trabajo + \"</p></div>\";
-                                    correo = json.user.email;
-                                }
-                                if (typeof json.estados !== 'undefined')
-                                {
-                                    var estados = document.getElementById(\"estadosAnteriores\");
-                                    
-                                    estados.innerHTML = \"<h4>Estados anteriores: </h4>\";
-                                    $.each(json.estados, function(i, item){
-                                        var d = new Date(json.estados[i].fecha_hora);
-                                        $('#estado_actual').val(json.estados[i].estado);
-                                        estados.innerHTML = estados.innerHTML + \"<label>\" + json.estados[i].estado + \" - \" + d.getDate() + \"/\" + (d.getMonth() + 1) + \"/\" + d.getFullYear() + \" \" + (d.getHours()+1) + \":\" + (d.getMinutes()+1) + \":\" + (d.getSeconds()+1) + \"</label><br><div>\" + (json.estados[i].detalles != null ? json.estados[i].detalles : \"\") + \"</div><hrstyle ='background-color:orange;border:none;'>\";
-                                        if (typeof json.estados[i].files !== 'undefined')
-                                        {
-                                            estados.innerHTML = estados.innerHTML +\"<p><b>Adjuntos: </b></p><ul>\";
-                                            $.each(json.estados[i].files, function(k, item){
-                                                estados.innerHTML = estados.innerHTML + \"<pre><li><a href='/fileUploads/estados/\"+ json.estados[i].files[k].nombreAlmacenado +\"'>\"+ json.estados[i].files[k].nombreOriginal+ \"</a></li></pre>\";
-                                            });
-                                            estados.innerHTML = estados.innerHTML +\"</ul>\";
-                                        }
-                                        estados.innerHTML = estados.innerHTML + \"<hr style='border-top:1px solid #171717; margin-top:0px;'>\"                            
-                                    });
-                                }
-                                if(typeof json.files !== \"undefined\")
-                                {
-                                    var adjuntosDesc = document.getElementById(\"adjuntosDesc\");
-                                    adjuntosDesc.innerHTML = \"<p><b>Archivos adjuntos: </b></p>\"
-                                    $.each(json.files, function(i, item){
-                                        adjuntosDesc.innerHTML = adjuntosDesc.innerHTML + \"<pre><li><a href='/fileUploads/tickets/\"+ json.files[i].nombreAlmacenado + \"'>\"+ json.files[i].nombreOriginal+ \"</a></li></pre>\";
-                                    });
-                                }
-                                else
-                                {
-                                    var adjuntosDesc = document.getElementById(\"adjuntosDesc\");
-                                    adjuntosDesc.innerHTML = \"\"
-                                }
-                                if(typeof json.subtema !== \"undefined\")
-                                {
-                                    $(\"#TemaTicket\").val(json.tema.id).change();
-                                    $(\"#SubTema\").val(json.subtema.id);
-                                }
-                            });
-                        }
-
-                
-                    </script>");
-                    $state = "all";
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
-                                                INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
-                                                INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
-                                                INNER JOIN users ON tickets.id_mortal = users.id
-                                                WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
-                                                ");
-                
-                $questions=$questions->result();
-            }
-            elseif(isset($id))
-            {
-                $state = "user";
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
-                                                INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
-                                                INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
-                                                INNER JOIN users ON tickets.id_mortal = users.id
-                                                WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
-                                                AND tickets.id_mortal = $id");
-                
-                $questions=$questions->result();
-            }
-            else{
-                
-                $state = "all";
-                $questions = $this->db->query("SELECT tickets.id_ticket, tickets.pregunta, estados.estado, tickets.descripcion, tickets.fecha_hora, users.email, users.nombre, users.apellido, users.tel, users.ext, users.cel, users.areaTrabajo, users.trabajo FROM tickets
-                                                INNER JOIN ticketsu_tiene_estado ON ticketsu_tiene_estado.id_ticketSU = tickets.id_ticket
-                                                INNER JOIN estados ON ticketsu_tiene_estado.id_estado = estados.id_estado
-                                                INNER JOIN users ON tickets.id_mortal = users.id
-                                                WHERE ticketsu_tiene_estado.fecha_hora IN (SELECT max(ticketsu_tiene_estado.fecha_hora) FROM ticketsu_tiene_estado GROUP BY ticketsu_tiene_estado.id_ticketSU)
-                                                ");
-                $questions=$questions->result();
-            }
-
+            
         ?>
         <script src="/js/dashboard/jquery.min.js"></script>
         <script src="/js/dashboard/bootstrap.min.js"></script>
@@ -296,6 +86,11 @@
         <!-- select2 -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+        <script>
+             var parameters = '<?php echo $state!=""?$state:(isset($id)?"usuario":"all"); ?>';
+             var users = '<?php echo isset($id)?$id:-1;?>';
+        </script>
     </head>
     <body style="">
         <div id="wrapper">
@@ -390,39 +185,100 @@
 <div id="page-wrapper">
     <div class="row">
         <div class="col-lg-12">
-            <?php if($state=="all"): ?>
-                
-                <h1 class="page-header">Todos los Tickets</h1>
-            <?php elseif($state=="alto"): ?>
-                <h1 class="page-header">Tickets atrasados alta prioridad</h1>
-            <?php elseif($state=="medio"): ?>
-                <h1 class="page-header">Tickets atrasados media prioridad</h1>
-            <?php elseif($state=="bajo"): ?>
-                <h1 class="page-header">Tickets atrasados baja prioridad</h1>
-            <?php elseif($state=="user"):?>
-                <?php 
-                    $usuario = $this->db->query("SELECT users.nombre, users.apellido FROM users WHERE users.id = $id")->result();
-                    if(count($usuario)>0):
-                ?>
-                    <h1 class="page-header"><?php echo $usuario[0]->nombre." ".$usuario[0]->apellido;?></h1>
-                <?php else: ?>
-                    <h1 class="page-header">Usuario no encontrado</h1>
-                <?php endif; ?>
-            <?php else: ?>
-                <h1 class="page-header">Tickets en <?php echo $state; ?></h1>
-            <?php endif; ?>
+            <h1 class="page-header">Tickets</h1>
         </div>
         <!-- /.col-lg-12 -->
         <div class="col-lg-12">
-            <a href="#newTicket-Container"><button class="btn btn-warning btn-lg btn-block" id="btn_newTicket">Crear nuevo ticket</button></a>
+            <a href="#newTicket-Container"><button class="btn btn-warning btn-lg btn-block" id="btn_newTicket" style="width:100%">Crear nuevo ticket</button></a>
         </div>
-        
+
+        <!-- Filtro de tabla -->
+        <div class="col-lg-12">
+            <h4>Filtrar tickets</h4>
+        </div>
+        <div class="col-lg-3" style="padding:5px">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    <i class="fa fa-user" aria-hidden="true"></i>Usuario
+                </span>
+                <select id="FiltroUsuario" name="FiltroUsuario" style="width:100%;" class="form-control">
+                    <option value ="all">Todos</option>
+                    <?php foreach($mortals as $m): ?>
+                        <option value="<?php echo $m->id;?>"><?php echo $m->email . " - " . $m->nombre . " " . $m->apellido; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-3" style="padding:5px">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    Estado
+                </span>
+                <select id="FiltroEstado" name="FiltroEstado" style="width:100%;" class="form-control">
+                    <option value="all">Todos</option>
+                    <option value="alta">Atrasados prioridad alta</option>
+                    <option value="media">Atrasados prioridad media</option>
+                    <option value="baja">Atrasados prioridad baja</option>
+                    <option value="nuevo">Nuevo</option>
+                    <option value="diferido">Diferido</option>
+                    <option value="espera">Espera</option>
+                    <option value="Sin resolver">Sin resolver</option>
+                    <option value="completado">Completado</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-3" style="padding:5px">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    Temas
+                </span>
+                <select id="FiltroTema" name="FiltroTema" style="width:100%;" class="form-control">
+                    <option value="all">Todos</option>
+                    <?php foreach($temasTickets as $t): ?>
+                        <option value="<?php echo $t->id; ?>"><?php echo $t->nombre; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-3" style="padding:5px">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    SubTemas
+                </span>
+                <select id="FiltroSubTema" name="FiltroSubTema" style="width:100%;" class="form-control" disabled>
+                    <option value="all">Todos</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-3" style="padding:5px">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    <i class="fa fa-calendar" aria-hidden="true"></i> Inicio
+                </span>
+                <input id="filterStart" type="date" class="form-control" placeholder="Fin" aria-describedby="sizing-addon1">
+            </div>
+        </div>
+        <div class="col-lg-3" style="padding:5px">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    <i class="fa fa-calendar" aria-hidden="true"></i> Fin
+                </span>
+                <input id="filterEnd"  type="date" class="form-control" placeholder="Fin" aria-describedby="sizing-addon1">
+            </div>
+        </div>
+        <div class="col-lg-6" style="padding:5px">
+            <div class="btn-group" style="width:100%">
+                <button class="btn btn-info" style="width:30%">Filtrar</button>
+                <button class="btn btn-success" style="width:70%"><i class="fa fa-file-excel-o"></i> Descargar Archivo Excel de tabla actual</button>
+            </div>
+        </div>
+
     </div>
         <!-- /.row -->
 <br>
     <div class="row" width="100%">
         <div class="col-lg-12">
-           <table id="tickets" class="display cell-border stripe dt-responsive nowrap">
+           <table id="tickets" class="display cell-border stripe dt-responsive nowrap" style="width=100%">
                 <thead>
                     <tr>
                         <th>Seleccionar</th>
@@ -441,25 +297,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($questions as $q): ?>
-                    <tr>
-                    <td><label class="btn active">
-                        <input type="radio" name="ticket" value="<?php echo $q->id_ticket; ?>" id="<?php echo "radio" . $q->id_ticket; ?>" style='display:none;' hidden/><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-dot-circle-o fa-2x"></i>
-                    </label></td>
-                    <td><?php echo $q->id_ticket ; ?></td>
-                    <td><?php echo $q->fecha_hora  ; ?></td>
-                    <td><?php echo $q->estado ; ?></td>
-                    <td><?php echo $q->pregunta ; ?></td>
-                    <td><?php echo $q->descripcion ; ?></td>
-                    <td><?php echo $q->nombre . " " . $q->apellido ; ?></td>
-                    <td><?php echo $q->email ; ?></td>
-                    <td><?php echo $q->tel ; ?></td>
-                    <td><?php echo $q->ext ; ?></td>
-                    <td><?php echo $q->cel ; ?></td>
-                    <td><?php echo $q->areaTrabajo ; ?></td>
-                    <td><?php echo $q->trabajo ; ?></td>
-                    </tr>
-                <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
@@ -702,6 +539,7 @@ var json = JSON;
                     
                     allowClear: true,
                     
+                    
 
                 });
                 $("#SubTema").select2({
@@ -731,29 +569,44 @@ var json = JSON;
                     allowClear: true,
                     tags: true
                 });
-
-                $('#tickets').DataTable( {
-                  "language": {
-                      "decimal":        ".",
-                      "lengthMenu": "Mostrar _MENU_ preguntas por página",
-                      "zeroRecords": "Nada encontrado - lo sentimos",
-                      "info": "Mostrando pagina _PAGE_ de _PAGES_",
-                      "infoEmpty": "No hay registros disponibles",
-                      "infoFiltered": "(Filtrando de _MAX_ registros)",
-                      "loadingRecords": "Cargando...",
-                      "processing":     "Procesando...",
-                      "search":         "Buscar:",
-                      "paginate": {
-                          "first":      "Primero",
-                          "last":       "Ultimo",
-                          "next":       "Siguiente",
-                          "previous":   "Anterior"
-                      }
-                  },
-                  bAutoWidth: true ,
-                  "order": [[ 2, "desc" ]],
-                  responsive: true
+                
+                $("#FiltroUsuario").select2({
+                    placeholder: {
+                        id: '-1', // the value of the option
+                        text: 'Seleccionar una opción'
+                    },
+                    allowClear: true,
+                    tags: true,
+                    width: 'element'
                 });
+                $("#FiltroEstado").select2({
+                    placeholder: {
+                        id: '-1', // the value of the option
+                        text: 'Seleccionar una opción'
+                    },
+                    allowClear: true,
+                    tags: true,
+                    width: 'element'
+                });
+                $("#FiltroTema").select2({
+                    placeholder: {
+                        id: '-1', // the value of the option
+                        text: 'Seleccionar una opción'
+                    },
+                    allowClear: true,
+                    tags: true,
+                    width: 'element'
+                });
+                $("#FiltroSubTema").select2({
+                    placeholder: {
+                        id: '-1', // the value of the option
+                        text: 'Seleccionar una opción'
+                    },
+                    allowClear: true,
+                    tags: true,
+                    width: 'element'
+                });
+                
 
              $('#detalles').summernote({
                 height: 300,
@@ -789,21 +642,10 @@ var json = JSON;
 
       });
       });
-
-      $('input[type=radio][name=ticket]').on("click", function() {
-                 $('#pregunta-container').show();
+      function obtenerTicket(id)
+      {
+                $('#pregunta-container').show();
                 $('#newTicket-Container').hide();
-                <?php foreach ($questions as $key => $q): ?>
-                    <?php if($key==0): ?>
-                        if (this.value == <?php echo $q->id_ticket; ?>) {
-                            id=$('input:radio[name=ticket]:checked').val();
-                        }
-                    <?php else: ?>
-                        else if (this.value == <?php echo $q->id_ticket; ?>) {
-                            id=$('input:radio[name=ticket]:checked').val();
-                        }
-                    <?php endif; ?>
-                <?php endforeach; ?>
                 $.ajaxSetup({
                     headers: {
                     }
@@ -877,7 +719,7 @@ var json = JSON;
                         $("#SubTema").val(json.subtema.id);
                     }
                 });
-            });
+            }
 
             $("#enviarForm").on("click", function()
             {
@@ -885,8 +727,179 @@ var json = JSON;
                 var contenidoURI = encodeURI(contenido);
                 window.open('mailto:' + correo + '?subject=Actualizacion%20de%20ticket&body=' + contenidoURI);
             });
-                </script>
+
+            var filtroEstado = document.getElementById("FiltroEstado");
+            switch(parameters)
+            {
+                case "all":
+                    filtroEstado.value = "all";
+                    break;
+                case "alto":
+                    filtroEstado.value = "alta";
+                    break;
+                case "medio":
+                    filtroEstado.value = "media";
+                    break;
+                case "bajo":
+                    filtroEstado.value = "baja";
+                    break;
+                case "Nuevo":
+                    filtroEstado.value = "nuevo";
+                    break;
+                case "diferido":
+                    filtroEstado.value = "diferido";
+                    break;
+                case "Espera":
+                    filtroEstado.value = "espera";
+                    break;
+                case "Sin_resolver":
+                    filtroEstado.value = "Sin resolver";
+                    break;
+                case "completado":
+                    filtroEstado.value = "completado";
+                    break;
+                default:
+                    
+                    if(!isNaN(parameters))
+                    {
+                        
+                        window.onload = function() {
+                            $('#radio' + parameters).prop("checked", true);
+                            $.ajaxSetup({
+                                headers: {
+                                    }
+                                })
+                            $.post("/ajax/ajaxticketsu", {
+                                'ticketid': parameters
+                            },
+                            function(data, status){
+                                var json = JSON.parse(data);
+                                var message = json.descripcion.replace(/\\n/g, "<br />");
+                                $('#pregunta-container').show();
+                                $('html, body').animate({
+                                    scrollTop: $("#pregunta-container").offset().top
+                                }, 1000);
+                                $('#pregunta').html(json.pregunta);
+                                $('#descripcion').html(message);
+                                $('#estado_actual').val(json.estado);
+                                $('#detalles').val(json.detalles);
+                                $('#porcentaje').val(json.porcentaje);
+                                $('#prioridad').val(json.prioridad);
+                                $('#ticket_su').val(json.id_ticket);
+                                $('#state').val(json.id_estado);
+                                $('#foro').attr("href", "/dashboard/foro/tema/"+json.id_ticket)
+                                $('#llamadas').attr("href", "/dashboard/llamadas/"+json.id_ticket)
+                                if(typeof json.user !== "undefined")
+                                {
+                                    document.getElementById("mortalUser").innerHTML = "<div style='padding-left:2em;'><p><b>Nombre: </b>" + json.user.nombre + " " + json.user.apellido + "</p>" + "<p><b>Correo:</b>" + json.user.email + "</p>" + "<p><b>Telefono: </b>" + json.user.tel + "</p>" + "<p><b>Extensión:</b>" + json.user.ext + "</p>" + "<p><b>Celular:</b>" + json.user.cel + "</p>"  + "<p><b>Area de trabajo:</b>" + json.user.areaTrabajo + "</p>"  + "<p><b>Trabajo:</b>" + json.user.trabajo + "</p></div>";
+                                    correo = json.user.email;
+                                }
+                                if (typeof json.estados !== 'undefined')
+                                {
+                                    var estados = document.getElementById("estadosAnteriores");
+                                    
+                                    estados.innerHTML = "<h4>Estados anteriores: </h4>";
+                                    $.each(json.estados, function(i, item){
+                                        var d = new Date(json.estados[i].fecha_hora);
+                                        $('#estado_actual').val(json.estados[i].estado);
+                                        estados.innerHTML = estados.innerHTML + "<label>" + json.estados[i].estado + " - " + d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " + (d.getHours()+1) + ":" + (d.getMinutes()+1) + ":" + (d.getSeconds()+1) + "</label><br><div>" + (json.estados[i].detalles != null ? json.estados[i].detalles : "") + "</div><hrstyle ='background-color:orange;border:none;'>";
+                                        if (typeof json.estados[i].files !== 'undefined')
+                                        {
+                                            estados.innerHTML = estados.innerHTML +"<p><b>Adjuntos: </b></p><ul>";
+                                            $.each(json.estados[i].files, function(k, item){
+                                                estados.innerHTML = estados.innerHTML + "<pre><li><a href='/fileUploads/estados/"+ json.estados[i].files[k].nombreAlmacenado +"'>"+ json.estados[i].files[k].nombreOriginal+ "</a></li></pre>";
+                                            });
+                                            estados.innerHTML = estados.innerHTML +"</ul>";
+                                        }
+                                        estados.innerHTML = estados.innerHTML + "<hr style='border-top:1px solid #171717; margin-top:0px;'>"                            
+                                    });
+                                }
+                                if(typeof json.files !== "undefined")
+                                {
+                                    var adjuntosDesc = document.getElementById("adjuntosDesc");
+                                    adjuntosDesc.innerHTML = "<p><b>Archivos adjuntos: </b></p>"
+                                    $.each(json.files, function(i, item){
+                                        adjuntosDesc.innerHTML = adjuntosDesc.innerHTML + "<pre><li><a href='/fileUploads/tickets/"+ json.files[i].nombreAlmacenado + "'>"+ json.files[i].nombreOriginal+ "</a></li></pre>";
+                                    });
+                                }
+                                else
+                                {
+                                    var adjuntosDesc = document.getElementById("adjuntosDesc");
+                                    adjuntosDesc.innerHTML = ""
+                                }
+                                if(typeof json.subtema !== "undefined")
+                                {
+                                    $("#TemaTicket").val(json.tema.id).change();
+                                    $("#SubTema").val(json.subtema.id);
+                                }
+                            })
+                        }
+                    }
+                    else if(users!=-1)
+                    {
+                        document.getElementById("FiltroUsuario").value = users;
+                    }
+                    else
+                    {
+                        filtroEstado.value = "all";
+                        parameters = "all";
+                    }
+            }
+            $ticketsTable = $('#tickets').DataTable( {
+                "language": {
+                    "decimal":        ".",
+                    "lengthMenu": "Mostrar _MENU_ preguntas por página",
+                    "zeroRecords": "Nada encontrado - lo sentimos",
+                    "info": "Mostrando pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No hay registros disponibles",
+                    "infoFiltered": "(Filtrando de _MAX_ registros)",
+                    "loadingRecords": "Cargando...",
+                    "processing":     "Procesando...",
+                    "search":         "Buscar:",
+                    "paginate": {
+                        "first":      "Primero",
+                        "last":       "Ultimo",
+                        "next":       "Siguiente",
+                        "previous":   "Anterior"
+                    }
+                },
+                "ajax": {
+                    "method": "POST",
+                    "url": "/ajax/AjaxTickets",
+                    "data": function ( d ) {
+                        d.estado = $('#FiltroEstado').val();
+                        d.usuario = $('#FiltroUsuario').val();
+                        d.tema = $('#FiltroTema').val();
+                        d.subTema = $('#FiltroSubTema').val();
+                        d.end = $('#filterEnd').val();
+                        d.start = $('#filterStart').val();
+                    }
+                },
+                "sAjaxDataProp": "",
+                "columns": [
+                    {data: function(data, type, full, meta){
+                        return "<label class=\"btn active\">  <input type='radio' value='"+data.id_ticket+"' id='"+data.id_ticket+"' name='ticket' onclick='obtenerTicket("+data.id_ticket+")'hidden/><i class=\"fa fa-circle-o fa-2x\"></i><i class=\"fa fa-dot-circle-o fa-2x\"></i> </label>";
+                    }},
+                    {data:"id_ticket"},
+                    {data:"fecha_hora"},
+                    {data:"estado"},
+                    {data:"pregunta"},
+                    {data:"descripcion"},
+                    {data:"nombre"},
+                    {data:"email"},
+                    {data:"tel"},
+                    {data:"ext"},
+                    {data:"cel"},
+                    {data:"areaTrabajo"},
+                    {data:"trabajo"}
+                    
+                ],
+                "order": [[ 2, "desc" ]],
+            });
+            document.getElementById("tickets").style="width:100%";
+        </script>
     
    
     </body>
 </html>
+

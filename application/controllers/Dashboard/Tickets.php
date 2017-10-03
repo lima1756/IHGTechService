@@ -104,7 +104,7 @@ class Tickets extends CI_Controller
         
         $checking = count($this->db->query('SELECT * FROM tech_service.ticket_tiene_tema WHERE id_ticketSU = '.$_POST['ticket_su'])->result())>0;
             
-        if(is_numeric($_POST['SubTema']))
+        if(isset($_POST['SubTema']) && is_numeric($_POST['SubTema']))
         {
             
             $insert = array(
@@ -122,7 +122,7 @@ class Tickets extends CI_Controller
         else
         {
             $insert = array(
-                "nombre" => $_POST['SubTema'],
+                "nombre" => (isset($_POST['SubTema'])?$_POST['SubTema']:""),
                 "id_tema" => $_POST['TemaTicket']
             );
             
