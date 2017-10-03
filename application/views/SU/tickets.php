@@ -268,8 +268,8 @@
         </div>
         <div class="col-lg-6" style="padding:5px">
             <div class="btn-group" style="width:100%">
-                <button class="btn btn-info" style="width:30%">Filtrar</button>
-                <button class="btn btn-success" style="width:70%"><i class="fa fa-file-excel-o"></i> Descargar Archivo Excel de tabla actual</button>
+                <button id="filtrarBtn" class="btn btn-info" style="width:30%">Filtrar</button>
+                <button id="excelBtn" class="btn btn-success" style="width:70%"><i class="fa fa-file-excel-o"></i> Descargar Archivo Excel de tabla actual</button>
             </div>
         </div>
 
@@ -432,102 +432,104 @@
                 </form>
         </section>
 
-</div>
-<!--FIN TODO -->
-<script>
+    </div>
+    <!--FIN TODO -->
+        <script>
 
-var correo = "";
-var json = JSON;
-    $("#TemaTicket").on("change", function()
-    {
-        TemaNormal();
-    });
-
-    $("#TemaTicket").on("click", function()
-    {
-        TemaNormal();
-    });
-
-    function TemaNormal()
-    {
-        $.ajaxSetup({
-            headers: {
-            },
-            async: false,
-        })
-        $.post("/ajax/ajaxTemas", {
-            'id': $("#TemaTicket").val()
-        },
-        function(data, status){
-            var subtemas = document.getElementById("SubTema");
-            subtemas.innerHTML = "<option></option>"
-            if(data != "")
+            var correo = "";
+            var json = JSON;
+            $("#TemaTicket").on("change", function()
             {
-                var datos = JSON.parse(data);
-                if(datos[0].id !== "undefined")
-                {
-                    $.each(datos, function(i, item){
-                        subtemas.innerHTML = subtemas.innerHTML + "<option value='" + datos[i].id + "'>" + datos[i].nombre + "</option>";
-                    });
-                    subtemas.disabled = false;
+                TemaNormal();
+            });
+
+            $("#TemaTicket").on("click", function()
+            {
+                TemaNormal();
+            });
+
+            function TemaNormal()
+            {
+                $.ajaxSetup({
+                    headers: {
+                    },
+                    async: false,
+                })
+                $.post("/ajax/ajaxTemas", {
+                    'id': $("#TemaTicket").val()
+                },
+                function(data, status){
+                    var subtemas = document.getElementById("SubTema");
+                    subtemas.innerHTML = "<option></option>"
+                    if(data != "")
+                    {
+                        var datos = JSON.parse(data);
+                        if(datos[0].id !== "undefined")
+                        {
+                            $.each(datos, function(i, item){
+                                subtemas.innerHTML = subtemas.innerHTML + "<option value='" + datos[i].id + "'>" + datos[i].nombre + "</option>";
+                            });
+                            subtemas.disabled = false;
+                        }
+                    }
+                    else
+                    {
+                        subtemas.disabled = true;
+                    }
+                    
                 }
+                );
             }
-            else
-            {
-                subtemas.disabled = true;
-            }
-            
-        }
-        );
-    }
-    $("#TemaTicketNuevo").on("click", function()
-    {
-        nuevoTema();
-    });
 
-    $("#TemaTicketNuevo").on("change", function()
-    {
-        nuevoTema();
-    });
-
-    function nuevoTema()
-    {
-        $.ajaxSetup({
-            headers: {
-            },
-            async: false
-        })
-        $.post("/ajax/ajaxTemas", {
-            'id': $("#TemaTicketNuevo").val()
-        },
-        function(data, status){
-            var subtemas = document.getElementById("SubTemaNuevo");
-            subtemas.innerHTML = "<option></option>"
-            if(data != "")
+            $("#TemaTicketNuevo").on("click", function()
             {
-                var datos = JSON.parse(data);
-                if(datos[0].id !== "undefined")
-                {
-                    $.each(datos, function(i, item){
-                        subtemas.innerHTML = subtemas.innerHTML + "<option value='" + datos[i].id + "'>" + datos[i].nombre + "</option>";
-                    });
-                    subtemas.disabled = false;
+                nuevoTema($("#TemaTicketNuevo"), document.getElementById("SubTemaNuevo"));
+            });
+
+            $("#TemaTicketNuevo").on("change", function()
+            {
+                nuevoTema($("#TemaTicketNuevo"), document.getElementById("SubTemaNuevo"));
+            });
+
+            function nuevoTema(inputTema, outputSubTemas)
+            {
+                $.ajaxSetup({
+                    headers: {
+                    },
+                    async: false
+                })
+                $.post("/ajax/ajaxTemas", {
+                    'id': inputTema.val()
+                },
+                function(data, status){
+                    outputSubTemas.innerHTML = "<option></option>"
+                    if(data != "")
+                    {
+                        var datos = JSON.parse(data);
+                        if(datos[0].id !== "undefined")
+                        {
+                            $.each(datos, function(i, item){
+                                outputSubTemas.innerHTML = outputSubTemas.innerHTML + "<option value='" + datos[i].id + "'>" + datos[i].nombre + "</option>";
+                            });
+                            outputSubTemas.disabled = false;
+                        }
+                    }
+                    else
+                    {
+                        outputSubTemas.disabled = true;
+                    }
+                    
                 }
+                );
             }
-            else
-            {
-                subtemas.disabled = true;
-            }
-            
-        }
-        );
-    }
-             $(document).ready( function () {
-                 $("input[name=ticket]").prop('checked', false);
+
+            // Initialize select2 and summernote inputs
+            $(document).ready( function () {
+                $("input[name=ticket]").prop('checked', false);
                 $("#btn_newTicket").click(function(){
-                    $('#pregunta-container').hide();
-                    $('#newTicket-Container').show();
-                    $("input[name=ticket]").prop('checked', false);
+                $('#pregunta-container').hide();
+                $('#newTicket-Container').show();
+                $("input[name=ticket]").prop('checked', false);
 
                 });
 
@@ -608,42 +610,46 @@ var json = JSON;
                 });
                 
 
-             $('#detalles').summernote({
-                height: 300,
-                lang:   'es-ES'
-            });
-            $('#descripcionForm').summernote({
-                height: 300,
-                lang:   'es-ES'
-            });
-             
+                $('#detalles').summernote({
+                    height: 300,
+                    lang:   'es-ES'
+                });
+
+                $('#descripcionForm').summernote({
+                    height: 300,
+                    lang:   'es-ES'
+                });
+                
             
             } );
 
-             $(document).on('change', ':file', function() {
-    var input = $(this),
-        numFiles = input.get(0).files ? input.get(0).files.length : 1,
-        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-    input.trigger('fileselect', [numFiles, label]);
-  });
+            // for the files
+            $(document).on('change', ':file', function() {
+                var input = $(this),
+                numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+                input.trigger('fileselect', [numFiles, label]);
+            });
 
-  // We can watch for our custom `fileselect` event like this
-  $(document).ready( function() {
-      $(':file').on('fileselect', function(event, numFiles, label) {
+            // We can watch for our custom `fileselect` event like this
+            $(document).ready( function() {
+                $(':file').on('fileselect', function(event, numFiles, label) {
 
-          var input = $(this).parents('.input-group').find(':text'),
-              log = numFiles > 1 ? numFiles + ' files selected' : label;
+                    var input = $(this).parents('.input-group').find(':text'),
+                        log = numFiles > 1 ? numFiles + ' files selected' : label;
 
-          if( input.length ) {
-              input.val(log);
-          } else {
-              if( log ) alert(log);
-          }
+                    if( input.length ) {
+                        input.val(log);
+                    } else {
+                        if( log ) alert(log);
+                    }
 
-      });
-      });
-      function obtenerTicket(id)
-      {
+                });
+            });
+
+            // Gets ticket information depending on the selected one
+            function obtenerTicket(id)
+            {
                 $('#pregunta-container').show();
                 $('#newTicket-Container').hide();
                 $.ajaxSetup({
@@ -720,7 +726,8 @@ var json = JSON;
                     }
                 });
             }
-
+            
+            // Send e-mail function
             $("#enviarForm").on("click", function()
             {
                 var contenido = "Estado:\n" + $("#estado_actual").val() + "\n\nActualización:\n" + $("#detalles").summernote("code").replace(/<\/p>/gi, "\n").replace(/<br\/?>/gi, "\n").replace(/<\/?[^>]+(>|$)/g, "");
@@ -728,6 +735,7 @@ var json = JSON;
                 window.open('mailto:' + correo + '?subject=Actualizacion%20de%20ticket&body=' + contenidoURI);
             });
 
+            // Sets the php parameter into de filter state (or user) field
             var filtroEstado = document.getElementById("FiltroEstado");
             switch(parameters)
             {
@@ -845,6 +853,8 @@ var json = JSON;
                         parameters = "all";
                     }
             }
+
+            //Initialize DataTable
             $ticketsTable = $('#tickets').DataTable( {
                 "language": {
                     "decimal":        ".",
@@ -897,6 +907,27 @@ var json = JSON;
                 "order": [[ 2, "desc" ]],
             });
             document.getElementById("tickets").style="width:100%";
+            
+            // Reloads DataTable AJAX values
+            $("#filtrarBtn").on("click", function(){
+                $ticketsTable.ajax.reload();
+                $('#pregunta-container').hide();
+                $('#newTicket-Container').hide();
+                document.getElementById("tickets").style="width:100%";
+            });
+
+            // Obtains AJAX values for the filtroSubTemas field.
+            $("#FiltroTema").on("change click", function()
+            {
+                if($("#FiltroTema")=="all")
+                {
+                    document.getElementById("FiltroSubTema").value="all";
+                }
+                else
+                {
+                    nuevoTema($("#FiltroTema"), document.getElementById("FiltroSubTema"));
+                }
+            });
         </script>
     
    

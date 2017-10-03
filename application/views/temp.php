@@ -209,3 +209,22 @@ else{
                                     ");
     $questions=$questions->result();
 }
+
+
+/* =========================================================
+?>
+<?php foreach ($questions as $key => $q): ?>
+<?php if($key==0): ?>
+    if (this.value == <?php echo $q->id_ticket; ?>) {
+        id=$('input:radio[name=ticket]:checked').val();
+    }
+<?php else: ?>
+    else if (this.value == <?php echo $q->id_ticket; ?>) {
+        id=$('input:radio[name=ticket]:checked').val();
+    }
+<?php endif; ?>
+<?php endforeach; ?>
+
+<?php 
+// ============================================================*/
+?>
